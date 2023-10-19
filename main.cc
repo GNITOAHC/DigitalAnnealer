@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "Annealer.h"
@@ -17,21 +18,10 @@
  * global variable -> ALL_CAPS
  */
 
-Graph readInput () {
-    double co;
-    int po1, po2;
-    Graph graph;
-    while (std::cin >> po1 >> po2 >> co) {
-        graph.pushBack(po1, po2, co);
-    }
-    return graph;
-}
+/* Helper functions */
 
-void testSpin (int index, Graph graph) {
-    graph.flipSpin(index);
-    std::cout << "index " << index << " spined !! " << graph.getHamiltonianEnergy() << std::endl;
-    return;
-}
+Graph readInput();
+void testSpin(int, Graph); // Cout index, graph and energy
 
 int main (int argc, char **argv) {
     Args args(argc, argv);
@@ -62,4 +52,32 @@ int main (int argc, char **argv) {
     // graph.print();
     // std::cout << graph.getHamiltonianEnergy() << std::endl;
     return 0;
+}
+
+Graph readInput () {
+    double d;
+    Graph graph;
+    std::string line;
+    std::vector<double> v;
+    while (std::getline(std::cin, line)) {
+        v.clear();
+        std::stringstream ss(line);
+
+        while (ss >> d)
+            v.push_back(d);
+
+        switch (v.size()) {
+            case 1: graph.pushBack(v[0]); break;
+            case 2: graph.pushBack(v[0], v[1]); break;
+            case 3: graph.pushBack(v[0], v[1], v[2]); break;
+            default: std::cerr << "Invalid input, size = " << v.size() << std::endl; exit(1);
+        }
+    }
+    return graph;
+}
+
+void testSpin (int index, Graph graph) {
+    graph.flipSpin(index);
+    std::cout << "index " << index << " spined !! " << graph.getHamiltonianEnergy() << std::endl;
+    return;
 }

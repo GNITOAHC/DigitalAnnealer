@@ -27,6 +27,19 @@ void Graph::privatePushBack(const int& index, AdjNode *node) {
     if (index >= spins.size()) { spins.resize(index + 1, UP); }
 }
 
+void Graph::privatePushBack(const int& index, const double& constant) {
+    /* Insert into constant_map */
+    std::map<int, double>::iterator it = constant_map.find(index);
+    if (it == constant_map.end()) {
+        constant_map.insert(std::pair<int, double>(index, constant));
+    } else {
+        it->second += constant;
+    }
+    /* Append the Spin vector */
+    if (index >= spins.size()) { spins.resize(index + 1, UP); }
+    return;
+}
+
 /* Accessors */
 
 // Get the Hamiltonian energy of the graph
@@ -51,6 +64,12 @@ double Graph::getHamiltonianEnergy() {
             tmp = tmp->next;
         }
     }
+    // Calculate the linear terms
+    for (auto const& it : constant_map) {
+        sum += it.second * (double)spins[it.first];
+    }
+    // Calculate the constant term
+    sum += constant;
     return sum;
 }
 
@@ -64,6 +83,7 @@ double Graph::getHamiltonianDifference(const int& index) {
         tmp = tmp->next;
     }
     // std::cout << -2.0 * sum_to_modify << std::endl;
+    if (constant_map.find(index) != constant_map.end()) { sum_to_modify += constant_map[index] * (double)spins[index]; }
     return -2.0 * sum_to_modify;
 }
 
@@ -76,7 +96,18 @@ void Graph::pushBack(const int& po1, const int& po2, const double& co) {
     if (po1 == po2) return; // self loop
     AdjNode *node2 = new AdjNode(po1, co);
     privatePushBack(po2, node2);
+    return;
 };
+
+void Graph::pushBack(const int& po, const double& co) {
+    privatePushBack(po, co);
+    return;
+}
+
+void Graph::pushBack(const double& co) {
+    this->constant += co;
+    return;
+}
 
 // Flip the spin of the given index
 void Graph::flipSpin(const int& index) { spins[index] = (spins[index] == UP) ? DOWN : UP; }

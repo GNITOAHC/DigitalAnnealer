@@ -21,13 +21,18 @@ class Graph {
   private:
     std::vector<AdjNode *> adj_list;
     std::map<int, std::vector<int> > adj_map;
+    std::map<int, double> constant_map;
     std::vector<Spin> spins;
+    double constant;
 
     void privatePushBack(const int&, AdjNode *);
+    void privatePushBack(const int&, const double&);
 
   public:
     /* Manipulator */
+    void pushBack(const double&);                         // Push back a constant
     void pushBack(const int&, const int&, const double&); // Push back an edge
+    void pushBack(const int&, const double&);             // Push back a constant_map
     void flipSpin(const int&);                            // Flip the spin of the given index
 
     /* Accessors */
