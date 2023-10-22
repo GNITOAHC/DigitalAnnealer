@@ -21,6 +21,7 @@
 /* Helper functions */
 
 Graph readInput();
+Graph readInputFromQubo();
 void testSpin(int, Graph); // Cout index, graph and energy
 
 int main (int argc, char **argv) {
@@ -40,7 +41,7 @@ int main (int argc, char **argv) {
     }
     if (is_qubo) { debug("QUBO"); }
 
-    Graph graph = readInput();
+    Graph graph = is_qubo ? readInputFromQubo() : readInput();
 
     std::cout << std::setprecision(10); // Set precision to 10 digits
 
@@ -52,6 +53,36 @@ int main (int argc, char **argv) {
     // graph.print();
     // std::cout << graph.getHamiltonianEnergy() << std::endl;
     return 0;
+}
+
+Graph readInputFromQubo () {
+    double d;
+    Graph graph;
+    std::string line;
+    std::vector<double> v;
+    while (std::getline(std::cin, line)) {
+        v.clear();
+        std::stringstream ss(line);
+
+        while (ss >> d)
+            v.push_back(d);
+
+        switch (v.size()) {
+            case 1: graph.pushBack(v[1]); break;
+            case 2:
+                graph.pushBack(v[0], v[1] / 2); // pushBack(k/2, index)
+                graph.pushBack(v[1] / 2);
+                break;
+            case 3: // v[0]: po1, v[1]: po2, v[2]: co
+                graph.pushBack(v[0], v[1], v[2] / 4);
+                graph.pushBack(v[0], v[2] / 4);
+                graph.pushBack(v[1], v[2] / 4);
+                graph.pushBack(v[2] / 4);
+                break;
+            default: std::cerr << "Invalid input, size = " << v.size() << std::endl; exit(1);
+        }
+    }
+    return graph;
 }
 
 Graph readInput () {
