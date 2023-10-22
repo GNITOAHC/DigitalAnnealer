@@ -46,9 +46,16 @@ int main (int argc, char **argv) {
     std::cout << std::setprecision(10); // Set precision to 10 digits
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
-    // graph.print();
+
     Annealer annealer;
     std::cout << "Hamiltonian energy: " << annealer.anneal(std::make_tuple(10, 10000), graph) << std::endl;
+
+    // Can only be used when the graph is a triangular graph
+    if (is_tri) {
+        const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
+        std::cout << "Order parameter length squared: " << op_length_square << std::endl;
+    }
+
     // testSpin(4, graph);
     // graph.print();
     // std::cout << graph.getHamiltonianEnergy() << std::endl;

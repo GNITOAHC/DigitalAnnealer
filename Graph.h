@@ -36,9 +36,9 @@ class Graph {
     void flipSpin(const int&);                            // Flip the spin of the given index
 
     /* Accessors */
-    double getOrderParameterLengthSquared();     // Get the order parameter length squared
-    double getHamiltonianEnergy();               // Get the Hamiltonian energy of the graph
-    double getHamiltonianDifference(const int&); // Get the Hamiltonian difference given the indices to flip and the spin
+    double getOrderParameterLengthSquared(const int&, const int&); // Get the order parameter length squared
+    double getHamiltonianEnergy();                                 // Get the Hamiltonian energy of the graph
+    double getHamiltonianDifference(const int&);                   // Get the Hamiltonian difference given the indices to flip and the spin
 
     /* Printer */
     void print();
