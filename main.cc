@@ -35,10 +35,7 @@ int main (int argc, char **argv) {
     const bool is_qubo = args.isQubo();
 
     // Debug session
-    if (is_tri) {
-        debug(triangular_height);
-        debug(triangular_length);
-    }
+    if (is_tri) { debug("TRI"); }
     if (is_qubo) { debug("QUBO"); }
 
     Graph graph = is_qubo ? readInputFromQubo() : readInput();

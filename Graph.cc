@@ -115,13 +115,13 @@ double Graph::getOrderParameterLengthSquared(const int& length, const int& heigh
     }
 
     // Print out the m_color_params
-    for (int i = 0; i < height; ++i) {
-        std::cout << "Layer " << i << ": ";
-        for (int j = 0; j < 3; ++j) {
-            std::cout << m_color_params[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (int i = 0; i < height; ++i) {
+    //     std::cout << "Layer " << i << ": ";
+    //     for (int j = 0; j < 3; ++j) {
+    //         std::cout << m_color_params[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
     const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
