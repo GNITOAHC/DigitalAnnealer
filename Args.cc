@@ -1,6 +1,5 @@
 #include "Args.h"
 #include <iostream>
-#include <string>
 
 /* Private helper */
 bool Args::isNumber(const std::string& s) {
@@ -28,12 +27,21 @@ void Args::parseArgs() {
         }
         // Parse QUBO argument
         if (this->argv[i] == std::string("--qubo")) { this->is_qubo = true; }
+        // Parse source file arguments
+        if (this->argv[i] == std::string("--file")) {
+            if (i + 1 >= this->argc) {
+                std::cerr << "Error: --file requires one source file path" << std::endl;
+                exit(0);
+            }
+            this->source_file = std::string(this->argv[i + 1]);
+        }
         // Parse help argument
         if (this->argv[i] == std::string("--help")) {
             std::cout << "Usage: " << this->argv[0] << " [options]" << std::endl;
             std::cout << "Options:" << std::endl;
             std::cout << "  --tri <length> <height>  Specify a triangular lattice" << std::endl;
             std::cout << "  --qubo                   Specify that the graph is a QUBO" << std::endl;
+            std::cout << "  --file <source>          The source file path of the input" << std::endl;
             std::cout << "  --help                   Display this information" << std::endl;
             exit(0);
         }
@@ -48,6 +56,7 @@ Args::Args(const int argc, char **argv) {
     this->tri_length = 0;
     this->tri_height = 0;
     this->is_qubo = false;
+    this->source_file = "";
     this->parseArgs();
     return;
 }
@@ -58,3 +67,5 @@ std::tuple<bool, std::pair<int, int> > Args::getTri() const {
 }
 
 bool Args::isQubo() const { return this->is_qubo; }
+
+std::string Args::getSourceFile() const { return this->source_file; }

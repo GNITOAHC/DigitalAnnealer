@@ -1,3 +1,9 @@
+#include <iomanip>
+#include <ios>
+#include <iostream>
+#include <sstream>
+#include <vector>
+
 #include "run.h"
 
 int run (int argc, char **argv) {
@@ -14,7 +20,12 @@ int run (int argc, char **argv) {
     if (is_tri) { debug("TRI"); }
     if (is_qubo) { debug("QUBO"); }
 
-    Graph graph = is_qubo ? readInputFromQubo() : readInput();
+    std::fstream file;
+    file.open(args.getSourceFile(), std::ios::in);
+
+    Graph graph = is_qubo ? readInputFromQubo(file) : readInput(file);
+
+    if (file.is_open()) file.close();
 
     std::cout << std::setprecision(10); // Set precision to 10 digits
 
@@ -35,12 +46,12 @@ int run (int argc, char **argv) {
     return 0;
 }
 
-Graph readInputFromQubo () {
+Graph readInputFromQubo (std::fstream& source) {
     double d;
     Graph graph;
     std::string line;
     std::vector<double> v;
-    while (std::getline(std::cin, line)) {
+    while (std::getline(source, line)) {
         v.clear();
         std::stringstream ss(line);
 
@@ -65,12 +76,12 @@ Graph readInputFromQubo () {
     return graph;
 }
 
-Graph readInput () {
+Graph readInput (std::fstream& source) {
     double d;
     Graph graph;
     std::string line;
     std::vector<double> v;
-    while (std::getline(std::cin, line)) {
+    while (std::getline(source, line)) {
         v.clear();
         std::stringstream ss(line);
 

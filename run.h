@@ -1,7 +1,5 @@
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include <fstream>
+#include <string>
 
 #include "Annealer.h"
 #include "Args.h"
@@ -20,8 +18,8 @@
 
 /* Helper functions */
 
-Graph readInput();
-Graph readInputFromQubo();
+Graph readInput(std::fstream&);
+Graph readInputFromQubo(std::fstream&);
 void testSpin(int, Graph); // Cout index, graph and energy
 
-int run(int, char**);
+int run(int, char **);
