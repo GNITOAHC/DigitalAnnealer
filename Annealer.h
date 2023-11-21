@@ -1,6 +1,8 @@
 #ifndef _ANNEALER_H_
 #define _ANNEALER_H_
 
+#include <functional>
+
 #include "Graph.h"
 
 class Annealer {
