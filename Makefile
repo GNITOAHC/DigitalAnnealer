@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -g -std=c++20
+CFLAGS = -Wall -O3 -std=c++20
 
 MPICC = mpicxx
 
