@@ -1,10 +1,11 @@
+#include "run.h"
+
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <math.h>
 #include <sstream>
 #include <vector>
-
-#include "run.h"
 
 // #define GETRIGHT(h, i, j, l) ((h * l * l) + (i * l) + ((j + 1) % l))
 // #define GETBOTTOM(h, i, j, l) ((h * l * l) + (((i + 1) % l) * l) + j)
