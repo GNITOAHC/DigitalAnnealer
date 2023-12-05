@@ -147,6 +147,15 @@ double Graph::getOrderParameterLengthSquared(const int& length, const int& heigh
     return sum / (double)height;
 }
 
+/* Constructor */
+Graph::Graph() {
+    this->adj_list = std::vector<AdjNode *> {};
+    this->adj_map = std::map<int, std::vector<int> > {};
+    this->constant_map = std::map<int, double> {};
+    this->spins = std::vector<Spin> {};
+    this->constant = 0.0;
+}
+
 /* Manipulator */
 
 // Push back an edge

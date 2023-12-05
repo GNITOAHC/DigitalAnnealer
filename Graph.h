@@ -29,6 +29,9 @@ class Graph {
     void privatePushBack(const int&, const double&);
 
   public:
+    /* Constructor */
+    Graph();
+
     /* Manipulator */
     void pushBack(const double&);                         // Push back a constant
     void pushBack(const int&, const int&, const double&); // Push back an edge
