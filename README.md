@@ -8,9 +8,11 @@ First, build the project via `make`. For more info, run `./main --help`.
 $ ./main --help
 Usage: ./main [options]
 Options:
-  --tri <length> <height>  Specify a triangular lattice
-  --qubo                   Specify that the graph is a QUBO
-  --help                   Display this information
+  --tri <length> <height>          Specify a triangular lattice
+  --qubo                           Specify that the graph is a QUBO
+  --file <source>                  The source file path of the input
+  --default-tri <length> <height>  Use built-in tool to create triangular lattice
+  --help                           Display this information
 ```
 
 ## Running the script
