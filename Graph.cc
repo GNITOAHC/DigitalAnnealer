@@ -44,6 +44,9 @@ void Graph::privatePushBack(const int& index, const double& constant) {
 
 /* Accessors */
 
+// Get the spin config vector of the graph
+std::vector<Spin> Graph::getSpins() const { return this->spins; }
+
 // Get the Hamiltonian energy of the graph
 double Graph::getHamiltonianEnergy() {
     double sum = 0.0;
