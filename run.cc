@@ -63,8 +63,12 @@ int run (int argc, char **argv) {
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
-    Annealer annealer;
-    std::cout << "Hamiltonian energy: " << annealer.anneal(std::make_tuple(10, 100000), graph) << std::endl;
+    {
+        Annealer annealer;
+        const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
+        const double hamiltonian_energy = annealer.anneal(std::make_tuple(10, temperature_tau), graph);
+        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    }
 
     // Can only be used when the graph is a triangular graph
     if (is_tri) {

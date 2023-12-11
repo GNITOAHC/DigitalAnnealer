@@ -16,6 +16,8 @@ void Args::outputHelp() const {
     std::cout << "  --qubo                           Specify that the graph is a QUBO" << std::endl;
     std::cout << "  --file <source>                  The source file path of the input" << std::endl;
     std::cout << "  --default-tri <length> <height>  Use built-in tool to create triangular lattice" << std::endl;
+    std::cout << "  --gamma <gamma>                  Specify a gamma value for triangular lattice" << std::endl;
+    std::cout << "  --temperature-tau <tau>          Specify a temperature tau" << std::endl;
     std::cout << "  --help                           Display this information" << std::endl;
     exit(0);
 }
@@ -106,6 +108,7 @@ void Args::parseArgs() {
             argument_set.insert("--default-tri");
         }
 
+        // Parse gamma argument
         if (this->argv[i] == std::string("--gamma")) {
             if (i + 1 >= this->argc) {
                 std::cerr << "Error: --gamma requires one value" << std::endl;
@@ -113,6 +116,20 @@ void Args::parseArgs() {
             }
             this->tri_gamma = atof(this->argv[i + 1]);
             argument_set.insert("--gamma");
+        }
+
+        // Parse temperature tau argument
+        if (this->argv[i] == std::string("--temperature-tau")) {
+            if (i + 1 >= this->argc) {
+                std::cerr << "Error: --temperature-tau requires one value" << std::endl;
+                exit(0);
+            }
+            if (!isNumber(this->argv[i + 1])) {
+                std::cerr << "Error: --temperature-tau requires one integer" << std::endl;
+                exit(0);
+            }
+            this->temperature_tau = atof(this->argv[i + 1]);
+            argument_set.insert("--temperature-tau");
         }
 
         // Parse help argument
@@ -126,12 +143,11 @@ void Args::parseArgs() {
 }
 
 /* Constructor */
-Args::Args(const int argc, char **argv) {
-    this->argc = argc;
-    this->argv = argv;
+Args::Args(const int argc, char **argv) : argc(argc), argv(argv) {
     this->tri_length = 0;
     this->tri_height = 0;
     this->tri_gamma = 0.0;
+    this->temperature_tau = 0;
     this->use_builtin = false;
     this->is_qubo = false;
     this->source_file = "";
@@ -149,5 +165,7 @@ std::tuple<bool, std::pair<int, int>, double> Args::useDefault() const {
 }
 
 bool Args::isQubo() const { return this->is_qubo; }
+
+int Args::getTemperatureTau() const { return this->temperature_tau; }
 
 std::string Args::getSourceFile() const { return this->source_file; }
