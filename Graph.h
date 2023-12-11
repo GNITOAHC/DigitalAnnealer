@@ -39,6 +39,7 @@ class Graph {
     void flipSpin(const int&);                            // Flip the spin of the given index
 
     /* Accessors */
+    std::vector<Spin> getSpins() const;                            // Get the spin config vector of the graph
     double getOrderParameterLengthSquared(const int&, const int&); // Get the order parameter length squared
     double getHamiltonianEnergy();                                 // Get the Hamiltonian energy of the graph
     double getHamiltonianDifference(const int&);                   // Get the Hamiltonian difference given the indices to flip and the spin

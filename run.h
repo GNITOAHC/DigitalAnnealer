@@ -1,7 +1,12 @@
 #include <fstream>
 #include <string>
 
+#if defined(USE_MPI)
+#include "mpi/Annealer.h"
+#else
 #include "Annealer.h"
+#endif
+
 #include "Args.h"
 #include "Graph.h"
 

@@ -1,5 +1,7 @@
 #include <mpi.h>
 
+#define USE_MPI 1
+
 #include "run.h"
 
 int main (int argc, char **argv) {
