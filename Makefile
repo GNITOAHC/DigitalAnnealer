@@ -22,7 +22,7 @@ Annealer.o: Annealer.cc Graph.h
 Args.o: Args.cc
 	$(CC) $(CFLAGS) -c Args.cc
 
-run.o: run.cc
+run.o: run.cc Helper.h
 	$(CC) $(CFLAGS) -c run.cc
 
 mpi.o: mpi.cc

@@ -1,6 +1,7 @@
 #include <complex>
 
 #include "Graph.h"
+#include "Helper.h"
 
 #define debug(n) std::cerr << n << std::endl;
 
@@ -183,6 +184,31 @@ void Graph::pushBack(const double& co) {
 
 // Flip the spin of the given index
 void Graph::flipSpin(const int& index) { spins[index] = (spins[index] == UP) ? DOWN : UP; }
+
+// Update the gamma of the graph
+void Graph::updateGamma(const double& gamma, const int& length, const int& height) {
+    char gamma_update_flag = 0X00; // check if gamma is updated for both up and down
+    for (int i = 0; i < adj_list.size(); ++i) {
+        AdjNode *tmp = adj_list[i];
+        const int next_layer_idx = get_layer_up(i, length, height);
+        const int prev_layer_idx = get_layer_down(i, length, height);
+        // char gamma_update_flag = 0X00;
+        while (tmp != nullptr) {
+            if (!(gamma_update_flag ^ 0X03)) { // if gamma_update_flag == 0X03
+                break;
+            } else if (tmp->val == next_layer_idx) {
+                tmp->weight = gamma;
+                gamma_update_flag |= 1;
+            } else if (tmp->val == prev_layer_idx) {
+                tmp->weight = gamma;
+                gamma_update_flag |= 2;
+            }
+            tmp = tmp->next;
+        }
+        gamma_update_flag = 0X00; // reset gamma_update_flag
+    }
+    return;
+}
 
 /* Printer */
 

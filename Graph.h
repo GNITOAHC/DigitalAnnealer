@@ -19,10 +19,10 @@ class Graph {
     friend void testSpin(int, Graph);
 
   private:
-    std::vector<AdjNode *> adj_list;
-    std::map<int, std::vector<int> > adj_map;
-    std::map<int, double> constant_map;
-    std::vector<Spin> spins;
+    std::vector<AdjNode *> adj_list;          // vector of pointers to AdjNode (sorted by index)
+    std::map<int, std::vector<int> > adj_map; // index of node -> vector of neighbors
+    std::map<int, double> constant_map;       // index of node -> constant
+    std::vector<Spin> spins;                  // vector of spins (sorted by index)
     double constant;
 
     void privatePushBack(const int&, AdjNode *);
@@ -33,10 +33,11 @@ class Graph {
     Graph();
 
     /* Manipulator */
-    void pushBack(const double&);                         // Push back a constant
-    void pushBack(const int&, const int&, const double&); // Push back an edge
-    void pushBack(const int&, const double&);             // Push back a constant_map
-    void flipSpin(const int&);                            // Flip the spin of the given index
+    void pushBack(const double&);                            // Push back a constant
+    void pushBack(const int&, const int&, const double&);    // Push back an edge
+    void pushBack(const int&, const double&);                // Push back a constant_map
+    void flipSpin(const int&);                               // Flip the spin of the given index
+    void updateGamma(const double&, const int&, const int&); // Update the gamma of the graph
 
     /* Accessors */
     std::vector<Spin> getSpins() const;                            // Get the spin config vector of the graph

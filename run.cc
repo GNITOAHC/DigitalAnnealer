@@ -1,3 +1,4 @@
+#include "Helper.h"
 #include "run.h"
 
 #include <iomanip>
@@ -7,21 +8,10 @@
 #include <sstream>
 #include <vector>
 
-// #define GETRIGHT(h, i, j, l) ((h * l * l) + (i * l) + ((j + 1) % l))
-// #define GETBOTTOM(h, i, j, l) ((h * l * l) + (((i + 1) % l) * l) + j)
-// #define GETBOTTOMRIGHT(h, i, j, l) ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l))
-// #define GETLAYERUP(h, i, j, l) ((((h + 1) % h) * l * l) + (i * l) + j)
-
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);
 
-inline int GETRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (i * l) + ((j + 1) % l)); }
-inline int GETBOTTOM (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + j); }
-inline int GETBOTTOMRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l)); }
-inline int GETLAYERUP (const int& h, const int& i, const int& j, const int& l, const int& height) {
-    return ((((h + 1) % height) * l * l) + (i * l) + j);
-}
 inline double loge (double x) { return std::log(x) / std::log(E); }
 
 // Make graph with length, height and gamma
@@ -66,7 +56,15 @@ int run (int argc, char **argv) {
     {
         Annealer annealer;
         const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
-        const double hamiltonian_energy = annealer.anneal(std::make_tuple(10, temperature_tau), graph);
+        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
+        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    }
+
+    {
+        Annealer annealer;
+        const int gamma_tau = 3;
+        const double hamiltonian_energy =
+            annealer.annealGamma(std::make_tuple(gamma, gamma_tau), graph, std::make_tuple(triangular_length, triangular_height));
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
 
