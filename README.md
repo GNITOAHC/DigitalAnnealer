@@ -41,7 +41,7 @@ All the samples are in the direstory `sample`. Please `make` then copy `cp ./mai
 > [!NOTE]  
 > Run the following inside `./sample` directory.
 
-1. Run `sh run.sh` will run `./main --tri 12 32 < sample.in`, which input a ising model with length of 12 and height of 32.
+1. Run `sh run.sh` will run `./main --tri 12 32 --file sample.in`, which input a ising model with length of 12 and height of 32.
 
    ```shell
    $ cat run.sh
