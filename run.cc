@@ -70,8 +70,20 @@ int run (int argc, char **argv) {
 
     // Can only be used when the graph is a triangular graph
     if (is_tri) {
-        const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
-        std::cout << "Order parameter length squared: " << op_length_square << std::endl;
+        // const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
+        // std::cout << "Order parameter length squared: " << op_length_square << std::endl;
+        const std::vector<double> list_of_op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
+        std::cout << "Layer order parameter length squared:\n";
+        for (int i = 0; i < list_of_op_length_square.size(); ++i) {
+            printf("layer %d: %f\n", i, list_of_op_length_square[i]);
+        }
+        std::cout << std::endl;
+
+        std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy(triangular_height);
+        std::cout << "Layer Hamiltonian energy:\n";
+        for (int i = 0; i < list_of_energy.size(); ++i)
+            printf("layer %d: %f\n", i, list_of_energy[i]);
+        std::cout << std::endl;
     }
 
     // testSpin(4, graph);

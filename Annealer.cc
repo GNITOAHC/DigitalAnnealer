@@ -58,7 +58,7 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
         }
         // Update the gamma: gamma, length, height
         graph.updateGamma(gamma, std::get<0>(graph_size), std::get<1>(graph_size));
-        graph.print();
+        // graph.print();
     }
     return graph.getHamiltonianEnergy();
 }

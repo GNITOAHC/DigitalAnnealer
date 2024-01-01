@@ -79,6 +79,36 @@ double Graph::getHamiltonianEnergy() {
     return sum;
 }
 
+// Get the Hamiltonian energy of each layer of the graph
+std::vector<double> Graph::getLayerHamiltonianEnergy(const int& height) {
+    std::vector<double> list_of_energy(height, 0.0);
+    double current_sum = 0.0;
+    for (int i = 0; i < adj_list.size(); ++i) {
+        AdjNode *tmp = adj_list[i];
+        if (tmp == nullptr) continue;
+        const double spin = (double)spins[i]; // Get spin of current node
+
+        while (tmp != nullptr) {
+            if (tmp->val > i) {
+                tmp = tmp->next;
+                continue;
+            }
+            current_sum += tmp->weight * spin * (double)spins[tmp->val];
+            tmp = tmp->next;
+        }
+
+        // Refresh the current_sum if the current node is the last node of the layer
+        const int length_square = adj_list.size() / height;
+        if ((i + 1) % length_square == 0) {
+            list_of_energy[i / length_square] = current_sum;
+            current_sum = 0.0;
+            // std::cout << "Current index = " << i << std::endl;
+        }
+    }
+
+    return list_of_energy;
+}
+
 // Get the Hamiltonian difference given the indices to flip and the spin
 double Graph::getHamiltonianDifference(const int& index) {
     double sum_to_modify = 0.0;
@@ -94,7 +124,7 @@ double Graph::getHamiltonianDifference(const int& index) {
 }
 
 // Get the order parameter length squared
-double Graph::getOrderParameterLengthSquared(const int& length, const int& height) {
+std::vector<double> Graph::getOrderParameterLengthSquared(const int& length, const int& height) {
     const std::complex<double> image_pi(0.0, (4.0 / 3.0) * M_PI);
     const std::complex<double> math_e(M_E, 0.0);
 
@@ -130,7 +160,7 @@ double Graph::getOrderParameterLengthSquared(const int& length, const int& heigh
     const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
     const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
 
-    double sum = 0.0;
+    std::vector<double> layer_order_parameter_length_squared(height, 0.0);
 
     // Iterate over each layer
     for (int i = 0; i < height; ++i) {
@@ -144,11 +174,10 @@ double Graph::getOrderParameterLengthSquared(const int& length, const int& heigh
         // Calculate the order parameter length squared
         const double order_parameter_length_squared = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
 
-        // Add the order parameter length squared to the sum
-        sum += order_parameter_length_squared;
+        layer_order_parameter_length_squared[i] = order_parameter_length_squared;
     }
 
-    return sum / (double)height;
+    return layer_order_parameter_length_squared;
 }
 
 /* Constructor */
