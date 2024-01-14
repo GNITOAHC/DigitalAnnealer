@@ -48,6 +48,26 @@ void Graph::privatePushBack(const int& index, const double& constant) {
 // Get the spin config vector of the graph
 std::vector<Spin> Graph::getSpins() const { return this->spins; }
 
+// Get the vertical energy of the graph
+std::vector<double> Graph::getVerticalEnergyProduct(const int& length) {
+    std::vector<double> list_of_energy(length, 0.0);
+
+    for (int i = 0; i < length; ++i) {
+        const int self_idx = adj_list[i]->val;
+        AdjNode *tmp = adj_list[i];
+        int current_layer = 0;
+
+        // \sum_{i=1}^L { \sum_{l=1}^{L_tau} { s_i^l * s_i^{l+1} } }
+        while (tmp->val != self_idx) {
+            const int layer_up_idx = get_layer_up(tmp->val, length, current_layer);
+            list_of_energy[i] += (double)spins[tmp->val] * (double)spins[layer_up_idx];
+            ++current_layer;
+        }
+    }
+
+    return list_of_energy;
+}
+
 // Get the Hamiltonian energy of the graph
 double Graph::getHamiltonianEnergy() {
     double sum = 0.0;
