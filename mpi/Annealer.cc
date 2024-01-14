@@ -127,7 +127,7 @@ bool Annealer::tempSwap(int myrank, double temp_rank, double hami_rank, std::vec
 }
 
 bool Annealer::gammaSwap(int myrank, double gamma_rank, double energy_rank, std::vector<Spin>& config) {
-    MPI_REQUEST requests = MPI_REQUEST_NULL;
+    MPI_Request requests = MPI_REQUEST_NULL;
     MPI_Status status;
 
     int src_a, src_b;
@@ -228,7 +228,7 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
     return graph.getHamiltonianEnergy();
 }
 
-double Annealer::annealGamma(const std::tuple<double, double>&, Graph&, const std::tuple<int, int>&) {
+double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
     const auto [gamma0, tau] = gamma;
     for (int i = 0; i < tau; ++i) {
         const double gamma = gamma0 * (1 - ((double)i / tau));
@@ -248,14 +248,14 @@ double Annealer::annealGamma(const std::tuple<double, double>&, Graph&, const st
         if (i % 8 == 0) {
             // MPI swap spins by temperature and hamiltonian energy
             std::vector<Spin> config = graph.getSpins();
-            std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct();
+            std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct(std::get<1>(graph_size));
             double vertical_energy_sum = 0.0;
             for (const auto& energy : vertical_energy_list) {
                 vertical_energy_sum += energy;
             }
 
             // MPI communication
-            gammaSwap(myrank, T, vertical_energy_sum, config);
+            gammaSwap(myrank, gamma, vertical_energy_sum, config);
         }
     }
     return graph.getHamiltonianEnergy();
