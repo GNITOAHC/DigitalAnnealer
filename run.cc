@@ -1,3 +1,4 @@
+#include "Helper.h"
 #include "run.h"
 
 #include <iomanip>
@@ -7,27 +8,17 @@
 #include <sstream>
 #include <vector>
 
-// #define GETRIGHT(h, i, j, l) ((h * l * l) + (i * l) + ((j + 1) % l))
-// #define GETBOTTOM(h, i, j, l) ((h * l * l) + (((i + 1) % l) * l) + j)
-// #define GETBOTTOMRIGHT(h, i, j, l) ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l))
-// #define GETLAYERUP(h, i, j, l) ((((h + 1) % h) * l * l) + (i * l) + j)
-
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);
 
-inline int GETRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (i * l) + ((j + 1) % l)); }
-inline int GETBOTTOM (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + j); }
-inline int GETBOTTOMRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l)); }
-inline int GETLAYERUP (const int& h, const int& i, const int& j, const int& l, const int& height) {
-    return ((((h + 1) % height) * l * l) + (i * l) + j);
-}
 inline double loge (double x) { return std::log(x) / std::log(E); }
 
 // Make graph with length, height and gamma
 Graph makeGraph(const int&, const int&, const double& gamma);
 
-int run (int argc, char **argv) {
+int run (int argc, char **argv, const int myrank) {
+    printf("rank = %d\n", myrank);
     Args args(argc, argv);
 
     int triangular_length = 0, triangular_height = 0;
@@ -63,17 +54,40 @@ int run (int argc, char **argv) {
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
+    // {
+    //     Annealer annealer;
+    //     const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
+    //     const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
+    //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    // }
+
     {
-        Annealer annealer;
-        const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
-        const double hamiltonian_energy = annealer.anneal(std::make_tuple(10, temperature_tau), graph);
+        Annealer annealer(myrank);
+        annealer.myrank = myrank;
+        const int gamma_tau = 100;
+        const double hamiltonian_energy =
+            annealer.annealGamma(std::make_tuple(gamma, gamma_tau), graph, std::make_tuple(triangular_length, triangular_height));
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
 
     // Can only be used when the graph is a triangular graph
     if (is_tri) {
-        const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
-        std::cout << "Order parameter length squared: " << op_length_square << std::endl;
+        // const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
+        // std::cout << "Order parameter length squared: " << op_length_square << std::endl;
+        const std::vector<double> list_of_op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
+        std::cout << "Layer order parameter length squared:\n";
+        for (int i = 0; i < list_of_op_length_square.size(); ++i) {
+            printf("layer %d: %f\n", i, list_of_op_length_square[i]);
+        }
+        std::cout << std::endl;
+
+        // std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy(triangular_height);
+        // std::cout << "Layer Hamiltonian energy:\n";
+        // for (int i = 0; i < list_of_energy.size(); ++i)
+        //     printf("layer %d: %f\n", i, list_of_energy[i]);
+        // std::cout << std::endl;
+
+        // graph.print();
     }
 
     // testSpin(4, graph);

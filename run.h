@@ -1,11 +1,13 @@
 #include <fstream>
 #include <string>
 
-#if defined(USE_MPI)
-#include "mpi/Annealer.h"
-#else
-#include "Annealer.h"
-#endif
+// #if defined(USE_MPI)
+// #include "./mpi/Annealer.h"
+// #else
+// #include "Annealer.h"
+// #endif
+
+#include "./mpi/Annealer.h"
 
 #include "Args.h"
 #include "Graph.h"
@@ -27,4 +29,4 @@ Graph readInput(std::fstream&);
 Graph readInputFromQubo(std::fstream&);
 void testSpin(int, Graph); // Cout index, graph and energy
 
-int run(int, char **);
+int run(int, char **, const int);
