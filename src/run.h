@@ -1,11 +1,11 @@
 #include <fstream>
 #include <string>
 
-// #if defined(USE_MPI)
-// #include "./mpi/Annealer.h"
-// #else
+#if defined(USE_MPI)
+#include "./mpi/Annealer.h"
+#else
 #include "./annealer/Annealer.h"
-// #endif
+#endif
 
 // #include "./mpi/Annealer.h"
 

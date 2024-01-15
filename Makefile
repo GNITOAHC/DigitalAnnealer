@@ -25,6 +25,9 @@ MPI_HEADERS = $(shell find $(SRC_DIR) -type d -print)
 INCLUDES = $(addprefix -I, $(HEADER_DIRS))
 MPI_INCLUDES = $(shell find $(SRC_DIR) -type d -not -path "src/annealer" | sed 's/^/-I/')
 
+# #defines to the program
+DEFS =
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
@@ -33,15 +36,16 @@ $(TARGET): $(OBJS)
 # Generic rule for .cc to .o
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(MPI_INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(MPI_INCLUDES) -c $< -o $@ $(DEFS)
 
 # Pattern rule for MPI objects
 $(BUILD_DIR)/mpi/%.o: $(MPI_DIR)/%.cc
 	@mkdir -p $(@D)
-	$(MPICC) $(CFLAGS) $(MPI_INCLUDES) -c $< -o $@
+	$(MPICC) $(CFLAGS) $(MPI_INCLUDES) -c $< -o $@ $(DEFS)
 
 
 # MPI target
+mpi: DEFS += -DUSE_MPI
 mpi: $(MPI_TARGET)
 
 $(MPI_TARGET): $(MPI_OBJS)
