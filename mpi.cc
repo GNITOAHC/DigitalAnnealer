@@ -13,7 +13,7 @@ int main (int argc, char **argv) {
 
     // printf("Hello from processor %d of %d\n", myrank, nprocs);
 
-    run(argc, argv);
+    run(argc, argv, myrank);
 
     MPI_Finalize();
     return 0;

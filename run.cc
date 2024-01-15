@@ -17,7 +17,8 @@ inline double loge (double x) { return std::log(x) / std::log(E); }
 // Make graph with length, height and gamma
 Graph makeGraph(const int&, const int&, const double& gamma);
 
-int run (int argc, char **argv) {
+int run (int argc, char **argv, const int myrank) {
+    printf("rank = %d\n", myrank);
     Args args(argc, argv);
 
     int triangular_length = 0, triangular_height = 0;
@@ -53,16 +54,17 @@ int run (int argc, char **argv) {
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
-    {
-        Annealer annealer;
-        const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
-        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
-        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
-    }
+    // {
+    //     Annealer annealer;
+    //     const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
+    //     const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
+    //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    // }
 
     {
-        Annealer annealer;
-        const int gamma_tau = 3;
+        Annealer annealer(myrank);
+        annealer.myrank = myrank;
+        const int gamma_tau = 100;
         const double hamiltonian_energy =
             annealer.annealGamma(std::make_tuple(gamma, gamma_tau), graph, std::make_tuple(triangular_length, triangular_height));
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
@@ -79,11 +81,13 @@ int run (int argc, char **argv) {
         }
         std::cout << std::endl;
 
-        std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy(triangular_height);
-        std::cout << "Layer Hamiltonian energy:\n";
-        for (int i = 0; i < list_of_energy.size(); ++i)
-            printf("layer %d: %f\n", i, list_of_energy[i]);
-        std::cout << std::endl;
+        // std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy(triangular_height);
+        // std::cout << "Layer Hamiltonian energy:\n";
+        // for (int i = 0; i < list_of_energy.size(); ++i)
+        //     printf("layer %d: %f\n", i, list_of_energy[i]);
+        // std::cout << std::endl;
+
+        // graph.print();
     }
 
     // testSpin(4, graph);

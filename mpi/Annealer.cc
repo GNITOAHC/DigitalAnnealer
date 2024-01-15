@@ -6,8 +6,14 @@
 #include <random>
 #include <tuple>
 
-static const std::mt19937 generator(std::random_device {}());
-static std::uniform_real_distribution<double> dis(0.0, 1.0);
+// static const std::mt19937 generator(std::random_device {}());
+// static std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+Annealer::Annealer(const int r) {
+    this->myrank = r;
+    // printf("myrank init to %d", this->myrank);
+    return;
+}
 
 // Randomly execute the given function with probability rand
 bool Annealer::randomExec(const double rand, const std::function<void()> func) {
@@ -15,7 +21,10 @@ bool Annealer::randomExec(const double rand, const std::function<void()> func) {
     // std::mt19937 generator(std::random_device {}());
     // std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    if (dis(generator) < rand) {
+    srand((unsigned)time(NULL) + this->myrank * 1000);
+    double r = ((double)std::rand() / (RAND_MAX));
+
+    if (r < rand) {
         func();
         return true;
     }
@@ -28,6 +37,10 @@ bool Annealer::randomExec(const double rand, const std::function<void()> func) {
     // }
 
     return false;
+
+    // test
+    // func();
+    // return true;
 }
 
 bool tempConfigCompare (double& src_temp, double& src_energy, double& target_temp, double& target_energy) {
@@ -35,7 +48,8 @@ bool tempConfigCompare (double& src_temp, double& src_energy, double& target_tem
     const double deltaS = ((1 / target_temp) - (1 / src_temp)) * (target_energy - src_energy);
 
     const double prob = exp(deltaS);
-    const double rand_num = (double)dis(generator);
+    // const double rand_num = (double)dis(generator);
+    const double rand_num = 0.5;
 
     if (prob > rand_num) return true;
     return false;
@@ -45,7 +59,9 @@ bool gammaConfigCompare (double& src_gamma, double& src_energy, double& target_g
     const double deltaS = (target_gamma - src_gamma) * (target_energy - src_energy);
 
     const double prob = exp(deltaS);
-    const double rand_num = (double)dis(generator);
+    // const double rand_num = (double)dis(generator);
+
+    const double rand_num = 0.5;
 
     if (prob > rand_num) return true;
     return false;
@@ -126,7 +142,7 @@ bool Annealer::tempSwap(int myrank, double temp_rank, double hami_rank, std::vec
     return is_swap;
 }
 
-bool Annealer::gammaSwap(int myrank, double gamma_rank, double energy_rank, std::vector<Spin>& config) {
+bool Annealer::gammaSwap(const int myrank, double gamma_rank, double energy_rank, std::vector<Spin>& config) {
     MPI_Request requests = MPI_REQUEST_NULL;
     MPI_Status status;
 
@@ -144,7 +160,7 @@ bool Annealer::gammaSwap(int myrank, double gamma_rank, double energy_rank, std:
     int tag_b = src_b;
 
     double gamma_other;
-    double hami_other;
+    double energy_other;
 
     // Check if src_a and src_b is swapping
     bool is_swap = false;
@@ -176,11 +192,11 @@ bool Annealer::gammaSwap(int myrank, double gamma_rank, double energy_rank, std:
         MPI_Recv(&gamma_other, 1, MPI_DOUBLE, src_a, tag_a, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Wait(&requests, MPI_STATUS_IGNORE);
 
-        MPI_Recv(&hami_other, 1, MPI_DOUBLE, src_a, tag_a, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&energy_other, 1, MPI_DOUBLE, src_a, tag_a, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Wait(&requests, MPI_STATUS_IGNORE);
 
         // Compare config check if swapping config is needed
-        is_swap = gammaConfigCompare(gamma_rank, energy_rank, gamma_other, hami_other);
+        is_swap = gammaConfigCompare(gamma_rank, energy_rank, gamma_other, energy_other);
 
         MPI_Send(&is_swap, 1, MPI_CXX_BOOL, src_a, tag_b, MPI_COMM_WORLD);
         MPI_Wait(&requests, &status);
@@ -231,6 +247,7 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
 double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
     const auto [gamma0, tau] = gamma;
     for (int i = 0; i < tau; ++i) {
+        // std::cout << "myrank = " << this->myrank << " i = " << i << std::endl;
         const double gamma = gamma0 * (1 - ((double)i / tau));
         const int length = graph.spins.size();
         for (int j = 0; j < length; ++j) {
@@ -245,9 +262,14 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
         graph.updateGamma(gamma, std::get<0>(graph_size), std::get<1>(graph_size));
         // graph.print();
 
-        if (i % 8 == 0) {
+        // std::cout << "anneal in mpi" << std::endl;
+
+        if (false) {
             // MPI swap spins by temperature and hamiltonian energy
             std::vector<Spin> config = graph.getSpins();
+            printf("Config before swap: ");
+            for (int i = 0; i < config.size(); ++i)
+                printf("%d ", config[i]);
             std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct(std::get<1>(graph_size));
             double vertical_energy_sum = 0.0;
             for (const auto& energy : vertical_energy_list) {
@@ -255,7 +277,11 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
             }
 
             // MPI communication
-            gammaSwap(myrank, gamma, vertical_energy_sum, config);
+            gammaSwap(this->myrank, gamma, vertical_energy_sum, config);
+            printf("Config: ");
+            for (int i = 0; i < config.size(); ++i)
+                printf("%d ", config[i]);
+            printf("\n");
         }
     }
     return graph.getHamiltonianEnergy();
