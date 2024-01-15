@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "Spin.h"
+#include "../include/Spin.h"
 
 struct AdjNode {
     int val;

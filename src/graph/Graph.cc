@@ -1,7 +1,7 @@
 #include <complex>
 
+#include "../Helper.h"
 #include "Graph.h"
-#include "Helper.h"
 
 #define debug(n) std::cerr << n << std::endl;
 

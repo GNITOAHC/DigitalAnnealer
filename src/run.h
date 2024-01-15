@@ -4,13 +4,13 @@
 // #if defined(USE_MPI)
 // #include "./mpi/Annealer.h"
 // #else
-// #include "Annealer.h"
+#include "./annealer/Annealer.h"
 // #endif
 
-#include "./mpi/Annealer.h"
+// #include "./mpi/Annealer.h"
 
-#include "Args.h"
-#include "Graph.h"
+#include "./args/Args.h"
+#include "./graph/Graph.h"
 
 #define debug(n) std::cerr << n << std::endl;
 
