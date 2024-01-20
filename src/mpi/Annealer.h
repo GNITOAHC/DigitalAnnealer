@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 
-#include "../Graph.h"
+#include "../graph/Graph.h"
 
 class Annealer {
   private:

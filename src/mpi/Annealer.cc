@@ -6,12 +6,8 @@
 #include <random>
 #include <tuple>
 
-// static const std::mt19937 generator(std::random_device {}());
-// static std::uniform_real_distribution<double> dis(0.0, 1.0);
-
 Annealer::Annealer(const int r) {
     this->myrank = r;
-    // printf("myrank init to %d", this->myrank);
     return;
 }
 
@@ -37,19 +33,17 @@ bool Annealer::randomExec(const double rand, const std::function<void()> func) {
     // }
 
     return false;
-
-    // test
-    // func();
-    // return true;
 }
 
 bool tempConfigCompare (double& src_temp, double& src_energy, double& target_temp, double& target_energy) {
     // "[formula]" beta = inverse temperature: Beta = 1 / T
     const double deltaS = ((1 / target_temp) - (1 / src_temp)) * (target_energy - src_energy);
 
+    std::mt19937 generator(std::random_device {}());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
     const double prob = exp(deltaS);
-    // const double rand_num = (double)dis(generator);
-    const double rand_num = 0.5;
+    const double rand_num = (double)dis(generator);
 
     if (prob > rand_num) return true;
     return false;
@@ -58,10 +52,11 @@ bool tempConfigCompare (double& src_temp, double& src_energy, double& target_tem
 bool gammaConfigCompare (double& src_gamma, double& src_energy, double& target_gamma, double& target_energy) {
     const double deltaS = (target_gamma - src_gamma) * (target_energy - src_energy);
 
-    const double prob = exp(deltaS);
-    // const double rand_num = (double)dis(generator);
+    std::mt19937 generator(std::random_device {}());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    const double rand_num = 0.5;
+    const double prob = exp(deltaS);
+    double rand_num = (double)dis(generator);
 
     if (prob > rand_num) return true;
     return false;
@@ -264,12 +259,12 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
 
         // std::cout << "anneal in mpi" << std::endl;
 
-        if (false) {
+        if (i % 8 == 0) {
             // MPI swap spins by temperature and hamiltonian energy
             std::vector<Spin> config = graph.getSpins();
-            printf("Config before swap: ");
-            for (int i = 0; i < config.size(); ++i)
-                printf("%d ", config[i]);
+            // printf("Config before swap: ");
+            // for (int i = 0; i < config.size(); ++i)
+            //     printf("%d ", config[i]);
             std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct(std::get<1>(graph_size));
             double vertical_energy_sum = 0.0;
             for (const auto& energy : vertical_energy_list) {
@@ -278,10 +273,10 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
 
             // MPI communication
             gammaSwap(this->myrank, gamma, vertical_energy_sum, config);
-            printf("Config: ");
-            for (int i = 0; i < config.size(); ++i)
-                printf("%d ", config[i]);
-            printf("\n");
+            // printf("Config: ");
+            // for (int i = 0; i < config.size(); ++i)
+            //     printf("%d ", config[i]);
+            // printf("\n");
         }
     }
     return graph.getHamiltonianEnergy();

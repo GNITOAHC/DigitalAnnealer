@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 
 class Annealer {
   private:

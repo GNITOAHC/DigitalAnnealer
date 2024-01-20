@@ -1,3 +1,5 @@
 *.o
 main
+mpi_main
 .DS_Store
+build

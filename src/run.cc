@@ -18,7 +18,9 @@ inline double loge (double x) { return std::log(x) / std::log(E); }
 Graph makeGraph(const int&, const int&, const double& gamma);
 
 int run (int argc, char **argv, const int myrank) {
+#ifdef USE_MPI
     printf("rank = %d\n", myrank);
+#endif
     Args args(argc, argv);
 
     int triangular_length = 0, triangular_height = 0;
