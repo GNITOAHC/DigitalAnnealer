@@ -9,8 +9,6 @@
 class Annealer {
   private:
     bool randomExec(const double, const std::function<void()>);
-    bool tempSwap(int, double, double, std::vector<Spin>&);
-    bool gammaSwap(int, double, double, std::vector<Spin>&);
 
   public:
     int myrank;
