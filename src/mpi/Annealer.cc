@@ -9,31 +9,18 @@
 typedef std::function<double(double&, double&, double&, double&)> deltaSGenFunc;
 bool swap(const int, double, double, std::vector<Spin>&, deltaSGenFunc); // myrank, compare_src1, compare_src2, spin config
 
-Annealer::Annealer(const int r) {
-    this->myrank = r;
-    return;
-}
+Annealer::Annealer(const int r) : myrank(r) {}
 
 // Randomly execute the given function with probability rand
 bool Annealer::randomExec(const double rand, const std::function<void()> func) {
     // Random number generator
-    // std::mt19937 generator(std::random_device {}());
-    // std::uniform_real_distribution<double> dis(0.0, 1.0);
+    std::mt19937 generator(std::random_device {}());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    srand((unsigned)time(NULL) + this->myrank * 1000);
-    double r = ((double)std::rand() / (RAND_MAX));
-
-    if (r < rand) {
+    if (dis(generator) < rand) {
         func();
         return true;
     }
-
-    // Fix the seed for testing
-    // srand(0);
-    // if ((double)std::rand() / ((double)RAND_MAX + 1) < rand) {
-    //     func();
-    //     return true;
-    // }
 
     return false;
 }
@@ -133,8 +120,6 @@ bool swap (const int myrank, double cmp_src1, double cmp_src2, std::vector<Spin>
 }
 
 double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph) {
-    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-    // srand(0);
     const auto [T0, tau] = temperature;
     for (int i = 0; i < tau; ++i) {
         const double T = T0 * (1 - ((double)i / tau));
@@ -153,7 +138,7 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
             std::vector<Spin> config = graph.getSpins();
 
             // MPI communication
-            swap(myrank, T, graph.getHamiltonianEnergy(), config, tempDeltaS);
+            swap(this->myrank, T, graph.getHamiltonianEnergy(), config, tempDeltaS);
         }
     }
     return graph.getHamiltonianEnergy();
@@ -162,7 +147,6 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
 double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
     const auto [gamma0, tau] = gamma;
     for (int i = 0; i < tau; ++i) {
-        // std::cout << "myrank = " << this->myrank << " i = " << i << std::endl;
         const double gamma = gamma0 * (1 - ((double)i / tau));
         const int length = graph.spins.size();
         for (int j = 0; j < length; ++j) {
