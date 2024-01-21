@@ -192,7 +192,7 @@ double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& gra
             }
 
             // MPI communication
-            gammaSwap(this->myrank, gamma, vertical_energy_sum, config, gammaDeltaS);
+            swap(this->myrank, gamma, vertical_energy_sum, config, gammaDeltaS);
             // printf("Config: ");
             // for (int i = 0; i < config.size(); ++i)
             //     printf("%d ", config[i]);
