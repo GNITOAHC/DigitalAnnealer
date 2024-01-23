@@ -11,8 +11,8 @@ SRC_DIR = src
 BUILD_DIR = build
 
 # Automatically find all .cc files in src and its subdirectories
-SRCS = $(shell find $(SRC_DIR) -name '*.cc' -not -path src/mpi.cc -not -path "src/annealer/Mpi*")
-MPI_SRCS = $(shell find $(SRC_DIR) -name '*.cc' -not -path "src/mpi/*" -not -path "src/main.cc")
+SRCS = $(shell find $(SRC_DIR) -name '*.cc' -not -path "src/annealer/Mpi*")
+MPI_SRCS = $(shell find $(SRC_DIR) -name '*.cc')
 
 # Convert .cc files to .o files in build directory
 OBJS = $(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o)
@@ -20,9 +20,7 @@ MPI_OBJS = $(MPI_SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o)
 
 # Automatically find all header directories in src and its subdirectories
 HEADER_DIRS = $(shell find $(SRC_DIR) -type d -print)
-
 INCLUDES = $(addprefix -I, $(HEADER_DIRS))
-# MPI_INCLUDES = $(shell find $(SRC_DIR) -type d -not -path "src/annealer" | sed 's/^/-I/')
 # MPI_INCLUDES = $(shell find $(SRC_DIR) -type d -not -path "src/annealer" | sed 's/^/-I/')
 
 # #defines to the program
