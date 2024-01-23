@@ -1,6 +1,6 @@
 #include <complex>
 
-#include "../Helper.h"
+#include "../include/Helper.h"
 #include "Graph.h"
 
 #define debug(n) std::cerr << n << std::endl;
