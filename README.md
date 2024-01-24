@@ -14,6 +14,8 @@ Options:
   --default-tri <length> <height>  Use built-in tool to create triangular lattice
   --gamma <gamma>                  Specify a gamma value for triangular lattice
   --temperature-tau <tau>          Specify a temperature tau
+  --gamma-tau <tau>                Specify a gamma tau
+  --final-gamma <gamma>            Specify a final gamma value
   --help                           Display this information
 ```
 
