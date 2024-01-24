@@ -12,7 +12,9 @@ class Args {
     int tri_length;          // Length of triangluar lattice
     int tri_height;          // Height of triangular lattice
     double tri_gamma;        // Gamma of the triangular lattice
+    double tri_final_gamma;  // Final gamma of the triangular lattice
     int temperature_tau;     // Temperature tau
+    int gamma_tau;           // Gamma tau
     bool use_builtin;        // Use built in function to construct triangular lattice
     bool is_qubo;            // Whether or not the graph is a QUBO
     std::string source_file; // Source file path
@@ -33,6 +35,8 @@ class Args {
     std::tuple<bool, std::pair<int, int>, double> useDefault() const;
     bool isQubo() const;
     int getTemperatureTau() const;
+    int getGammaTau() const;
+    double getFinalGamma() const;
     std::string getSourceFile() const;
 };
 

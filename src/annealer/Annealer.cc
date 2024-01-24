@@ -58,10 +58,10 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
     return graph.getHamiltonianEnergy();
 }
 
-double Annealer::annealGamma(const std::tuple<double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
-    const auto [gamma0, tau] = gamma;
+double Annealer::annealGamma(const std::tuple<double, double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
+    const auto [gamma0, tau, final_gamma] = gamma;
     for (int i = 0; i <= tau; ++i) {
-        const double gamma = gamma0 * (1 - ((double)i / tau));
+        const double gamma = gamma0 * (1 - ((double)i / tau)) + final_gamma * ((double)i / tau);
         const int length = graph.spins.size();
         for (int j = 0; j < length; ++j) {
             // Calculate the PI_accept
