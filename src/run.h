@@ -1,16 +1,9 @@
-#include <fstream>
-#include <string>
-
-#if defined(USE_MPI)
-#include "./mpi/Annealer.h"
-#else
 #include "./annealer/Annealer.h"
-#endif
-
-// #include "./mpi/Annealer.h"
-
 #include "./args/Args.h"
 #include "./graph/Graph.h"
+
+#include <fstream>
+#include <string>
 
 #define debug(n) std::cerr << n << std::endl;
 

@@ -1,3 +1,7 @@
+#ifdef USE_MPI
+#include <mpi.h>
+#endif
+
 #include "run.h"
 #define debug(n) std::cerr << n << std::endl;
 
@@ -11,6 +15,19 @@
  */
 
 int main (int argc, char **argv) {
-    run(argc, argv, 0);
+    int myrank = 0, nprocs = 0;
+
+#ifdef USE_MPI
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+#endif
+
+    run(argc, argv, myrank);
+
+#ifdef USE_MPI
+    MPI_Finalize();
+#endif
+
     return 0;
 }

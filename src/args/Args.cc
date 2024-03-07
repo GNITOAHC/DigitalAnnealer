@@ -18,6 +18,8 @@ void Args::outputHelp() const {
     std::cout << "  --default-tri <length> <height>  Use built-in tool to create triangular lattice" << std::endl;
     std::cout << "  --gamma <gamma>                  Specify a gamma value for triangular lattice" << std::endl;
     std::cout << "  --temperature-tau <tau>          Specify a temperature tau" << std::endl;
+    std::cout << "  --gamma-tau <tau>                Specify a gamma tau" << std::endl;
+    std::cout << "  --final-gamma <gamma>            Specify a final gamma value" << std::endl;
     std::cout << "  --help                           Display this information" << std::endl;
     exit(0);
 }
@@ -132,6 +134,30 @@ void Args::parseArgs() {
             argument_set.insert("--temperature-tau");
         }
 
+        // Parse gamma tau argument
+        if (this->argv[i] == std::string("--gamma-tau")) {
+            if (i + 1 >= this->argc) {
+                std::cerr << "Error: --gamma-tau requires one value" << std::endl;
+                exit(0);
+            }
+            if (!isNumber(this->argv[i + 1])) {
+                std::cerr << "Error: --gamma-tau requires one integer" << std::endl;
+                exit(0);
+            }
+            this->gamma_tau = atof(this->argv[i + 1]);
+            argument_set.insert("--gamma-tau");
+        }
+
+        // Parse final gamma argument
+        if (this->argv[i] == std::string("--final-gamma")) {
+            if (i + 1 >= this->argc) {
+                std::cerr << "Error: --final-gamma requires one value" << std::endl;
+                exit(0);
+            }
+            this->tri_final_gamma = atof(this->argv[i + 1]);
+            argument_set.insert("--final-gamma");
+        }
+
         // Parse help argument
         if (this->argv[i] == std::string("--help")) { this->outputHelp(); }
     }
@@ -148,6 +174,8 @@ Args::Args(const int argc, char **argv) : argc(argc), argv(argv) {
     this->tri_height = 0;
     this->tri_gamma = 0.0;
     this->temperature_tau = 0;
+    this->gamma_tau = 0;
+    this->tri_final_gamma = 0.0;
     this->use_builtin = false;
     this->is_qubo = false;
     this->source_file = "";
@@ -167,5 +195,8 @@ std::tuple<bool, std::pair<int, int>, double> Args::useDefault() const {
 bool Args::isQubo() const { return this->is_qubo; }
 
 int Args::getTemperatureTau() const { return this->temperature_tau; }
+int Args::getGammaTau() const { return this->gamma_tau; }
+
+double Args::getFinalGamma() const { return this->tri_final_gamma; }
 
 std::string Args::getSourceFile() const { return this->source_file; }

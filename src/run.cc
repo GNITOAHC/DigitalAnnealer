@@ -1,4 +1,4 @@
-#include "Helper.h"
+#include "./include/Helper.h"
 #include "run.h"
 
 #include <iomanip>
@@ -57,7 +57,7 @@ int run (int argc, char **argv, const int myrank) {
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
     // {
-    //     Annealer annealer;
+    //     Annealer annealer(myrank);
     //     const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
     //     const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
     //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
@@ -66,9 +66,9 @@ int run (int argc, char **argv, const int myrank) {
     {
         Annealer annealer(myrank);
         annealer.myrank = myrank;
-        const int gamma_tau = 100;
-        const double hamiltonian_energy =
-            annealer.annealGamma(std::make_tuple(gamma, gamma_tau), graph, std::make_tuple(triangular_length, triangular_height));
+        const int gamma_tau = args.getGammaTau() != 0 ? args.getGammaTau() : 100000;
+        const double hamiltonian_energy = annealer.annealGamma(std::make_tuple(gamma, gamma_tau, args.getFinalGamma()), graph,
+                                                               std::make_tuple(triangular_length, triangular_height));
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
 
