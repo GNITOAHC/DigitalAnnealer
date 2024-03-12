@@ -1,6 +1,7 @@
-#ifndef _ARGS_H_
-#define _ARGS_H_
+#ifndef _ARGPARSE_LIB_H_
+#define _ARGPARSE_LIB_H_
 
+#include <functional>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -9,6 +10,8 @@
 // using ArgVal = std::variant<int, bool, double, std::string, std::vector<int>, std::vector<double>, std::vector<std::string> >;
 typedef std::string ArgKey;
 typedef std::variant<int, bool, double, std::string, std::vector<int>, std::vector<double>, std::vector<std::string> > ArgVal;
+
+namespace argparse {
 
 struct ArgValOutput {
     void operator()(const int& i) { std::cout << i << std::endl; }
@@ -38,12 +41,13 @@ struct ArgFormat {
     ArgFormat(const std::string& s, const ArgType& t, const int& c) : key(s), type(t), arg_count(c), required(false) {}
     ArgFormat(const std::string& s, const ArgType& t, const int& c, const bool& r) : key(s), type(t), arg_count(c), required(r) {}
 };
+enum ArgConstraintType { COEXIST, MUTEX };
 struct ArgConstraint {
     std::string key;
     std::string constraint;
-    bool co_exist; // If false, the constraint is a mutual exclusion
-    ArgConstraint(const std::string& k, const std::string& c) : key(k), constraint(c), co_exist(true) {}
-    ArgConstraint(const std::string& k, const std::string& c, const bool& b) : key(k), constraint(c), co_exist(b) {}
+    ArgConstraintType type; // If false, the constraint is a mutual exclusion
+    ArgConstraint(const std::string& k, const std::string& c) : key(k), constraint(c), type(COEXIST) {}
+    ArgConstraint(const std::string& k, const std::string& c, const ArgConstraintType& act) : key(k), constraint(c), type(act) {}
 };
 
 namespace ArgConstructor {
@@ -65,5 +69,7 @@ class Args {
     bool hasArg(const std::string&) const;
     ArgVal getArg(const std::string&) const;
 };
+
+} // namespace argparse
 
 #endif
