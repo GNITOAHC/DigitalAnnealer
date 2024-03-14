@@ -1,3 +1,4 @@
+#include "./args/Args.h"
 #include "./include/Helper.h"
 #include "run.h"
 
@@ -21,56 +22,54 @@ int run (int argc, char **argv, const int myrank) {
 #ifdef USE_MPI
     printf("rank = %d\n", myrank);
 #endif
-    Args args(argc, argv);
+    CustomArgs args(argc, argv);
 
     int triangular_length = 0, triangular_height = 0;
     double gamma = 0;
 
-    // Get the triangular length and height if specified
-    const bool is_tri = std::get<0>(args.getTri());
-    if (is_tri) { std::tie(triangular_length, triangular_height) = std::get<1>(args.getTri()); }
-
     // Get whether or not the graph is a QUBO ( convert to ising if it's QUBO )
-    const bool is_qubo = args.isQubo();
-
-    // Get length, height and gamma if specified
-    const bool is_builtin_tri = std::get<0>(args.useDefault());
+    const bool is_qubo = args.hasArg("--qubo");
     std::fstream file;
     Graph graph;
-    // Detect if use file input or default triangular input
-    if (is_builtin_tri) {
-        std::tie(triangular_length, triangular_height) = std::get<1>(args.useDefault());
-        gamma = std::get<2>(args.useDefault());
-        graph = makeGraph(triangular_length, triangular_height, gamma);
-    } else {
-        file.open(args.getSourceFile(), std::ios::in);
+
+    // Get whether or not the graph is a triangular graph
+    const bool is_tri = args.hasArg("--tri") || args.hasArg("--default-tri");
+    if (args.hasArg("--tri")) {
+        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--tri"));
+        triangular_length = v[0], triangular_height = v[1];
+
+        file.open(std::get<std::string>(args.getArg("--file")), std::ios::in);
         graph = is_qubo ? readInputFromQubo(file) : readInput(file);
+        if (file.is_open()) file.close();
+    } else if (args.hasArg("--default-tri")) {
+        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--default-tri"));
+        triangular_length = v[0], triangular_height = v[1];
+
+        gamma = std::get<double>(args.getArg("--gamma"));
+        graph = makeGraph(triangular_length, triangular_height, gamma);
     }
-
-    if (file.is_open()) file.close();
-
-    // graph.print();
-    // exit(0);
 
     std::cout << std::setprecision(10); // Set precision to 10 digits
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
-    // {
-    //     Annealer annealer(myrank);
-    //     const int temperature_tau = args.getTemperatureTau() != 0 ? args.getTemperatureTau() : 100000;
-    //     const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
-    //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
-    // }
-
     {
         Annealer annealer(myrank);
-        annealer.myrank = myrank;
-        const int gamma_tau = args.getGammaTau() != 0 ? args.getGammaTau() : 100000;
-        const double hamiltonian_energy = annealer.annealGamma(std::make_tuple(gamma, gamma_tau, args.getFinalGamma()), graph,
-                                                               std::make_tuple(triangular_length, triangular_height));
+        const int temperature_tau = args.hasArg("--temperature-tau") ? std::get<int>(args.getArg("--temperature-tau")) : 100000;
+        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
+
+    // {
+    //     Annealer annealer(myrank);
+    //     annealer.myrank = myrank;
+    //     // const int gamma_tau = args.getGammaTau() != 0 ? args.getGammaTau() : 100000;
+    //     const int gamma_tau = args.hasArg("--gamma-tau") ? std::get<double>(args.getArg("--gamma-tau")) : 100000;
+    //     const double final_gamma = args.hasArg("--final-gamma") ? std::get<double>(args.getArg("--final-gamma")) : 0.0;
+    //     const double hamiltonian_energy =
+    //         annealer.annealGamma(std::make_tuple(gamma, gamma_tau, final_gamma), graph, std::make_tuple(triangular_length, triangular_height));
+    //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    // }
 
     // Can only be used when the graph is a triangular graph
     if (is_tri) {
