@@ -64,12 +64,13 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ $(DEFS)
 
 # ===== MPI target rules
+$(MPI_TARGET): $(MPI_OBJS)
+	$(MPICC) $(CFLAGS) $(INCLUDES) -o $(MPI_TARGET) $(MPI_OBJS) -L$(BUILD_DIR) -lmylib
+
 $(BUILD_DIR)/annealer/MpiAnnealer.o: $(SRC_DIR)/annealer/MpiAnnealer.cc
 	@mkdir -p $(@D)
 	$(MPICC) $(CFLAGS) $(INCLUDES) -c $< -o $@ $(DEFS)
 
-$(MPI_TARGET): $(MPI_OBJS)
-	$(MPICC) $(CFLAGS) $(INCLUDES) -o $(MPI_TARGET) $(MPI_OBJS)
 
 clean:
 	$(RM) -r $(BUILD_DIR) $(TARGET) $(MPI_TARGET)
