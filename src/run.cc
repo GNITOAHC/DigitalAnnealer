@@ -12,6 +12,7 @@
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);
+const int T0 = 2;
 
 inline double loge (double x) { return std::log(x) / std::log(E); }
 
@@ -56,7 +57,7 @@ int run (int argc, char **argv, const int myrank) {
     {
         Annealer annealer(myrank);
         const int temperature_tau = args.hasArg("--temperature-tau") ? std::get<int>(args.getArg("--temperature-tau")) : 100000;
-        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(10, temperature_tau), graph);
+        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(T0, temperature_tau), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
 
