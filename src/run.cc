@@ -30,24 +30,26 @@ int run (int argc, char **argv, const int myrank) {
 
     // Get whether or not the graph is a QUBO ( convert to ising if it's QUBO )
     const bool is_qubo = args.hasArg("--qubo");
+    // Get whether or not the graph is a triangular graph
+    const bool is_tri = args.hasArg("--tri") || args.hasArg("--default-tri");
+
     std::fstream file;
     Graph graph;
 
-    // Get whether or not the graph is a triangular graph
-    const bool is_tri = args.hasArg("--tri") || args.hasArg("--default-tri");
-    if (args.hasArg("--tri")) {
-        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--tri"));
-        triangular_length = v[0], triangular_height = v[1];
-
+    // Read input from file or use default
+    if (args.hasArg("--file")) {
         file.open(std::get<std::string>(args.getArg("--file")), std::ios::in);
         graph = is_qubo ? readInputFromQubo(file) : readInput(file);
         if (file.is_open()) file.close();
     } else if (args.hasArg("--default-tri")) {
-        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--default-tri"));
-        triangular_length = v[0], triangular_height = v[1];
-
         gamma = std::get<double>(args.getArg("--gamma"));
         graph = makeGraph(triangular_length, triangular_height, gamma);
+    }
+
+    // Set the graph to triangular graph if the option is specified
+    if (is_tri) {
+        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--tri"));
+        triangular_length = v[0], triangular_height = v[1];
     }
 
     std::cout << std::setprecision(10); // Set precision to 10 digits

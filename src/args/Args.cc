@@ -31,8 +31,8 @@ std::vector<ArgFormat> CustomArgs::argsConstruct() const {
 std::vector<struct argparse::ArgConstraint> CustomArgs::argsConstraint() const {
     return std::vector<struct ArgConstraint>({
         // key, constraint, co_exist
+        { "--default-tri", "--file", MUTEX },
         { "--default-tri", "--gamma", COEXIST },
-        { "--tri", "--file", COEXIST },
         { "--default-tri", "--qubo", MUTEX },
     });
 }
