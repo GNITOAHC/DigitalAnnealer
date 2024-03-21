@@ -21,9 +21,9 @@ std::vector<ArgFormat> CustomArgs::argsConstruct() const {
         { "--file", ARG_STRING, 1 },
         { "--default-tri", ARG_VI, 2 },
         { "--gamma", ARG_DOUBLE, 1 },
-        { "--temperature-tau", ARG_INT, 1 },
-        { "--gamma-tau", ARG_DOUBLE, 1 },
         { "--final-gamma", ARG_DOUBLE, 1 },
+        { "--tau", ARG_INT, 1 },
+        { "--func", ARG_STRING, 1 },
         { "--help", ARG_BOOL, 0, false },
     });
 };
@@ -41,6 +41,13 @@ void CustomArgs::customConstraintsCheck() const {
     if (!this->hasArg("--default-tri") && !this->hasArg("--file")) {
         throw std::invalid_argument("Either --default-tri or --file must be specified");
     }
+    if (this->hasArg("--func")) {
+        const std::string func = std::get<std::string>(this->getArg("--func"));
+        if (func != "temp" && func != "gamma") {
+            std::cout << func << "is not a valid function option" << std::endl;
+            throw std::invalid_argument("Invalid function specified");
+        }
+    }
     return;
 }
 
@@ -52,9 +59,9 @@ void CustomArgs::outputHelp() const {
     std::cout << "  --file <source>                  The source file path of the input" << std::endl;
     std::cout << "  --default-tri <length> <height>  Use built-in tool to create triangular lattice" << std::endl;
     std::cout << "  --gamma <gamma>                  Specify a gamma value for triangular lattice" << std::endl;
-    std::cout << "  --temperature-tau <tau>          Specify a temperature tau" << std::endl;
-    std::cout << "  --gamma-tau <tau>                Specify a gamma tau" << std::endl;
     std::cout << "  --final-gamma <gamma>            Specify a final gamma value" << std::endl;
+    std::cout << "  --tau <tau>                      Specify a tau for annealer" << std::endl;
+    std::cout << "  --func <func_string>             Specify a function for annealer, either \"temp\" or \"gamma\" " << std::endl;
     std::cout << "  --help                           Display this information" << std::endl;
     exit(0);
 }

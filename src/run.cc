@@ -54,23 +54,21 @@ int run (int argc, char **argv, const int myrank) {
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
-    {
+    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "temp";
+    const int tau = args.hasArg("--tau") ? std::get<int>(args.getArg("--tau")) : 100000;
+
+    if (func == "temp") {
         Annealer annealer(myrank);
-        const int temperature_tau = args.hasArg("--temperature-tau") ? std::get<int>(args.getArg("--temperature-tau")) : 100000;
-        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(T0, temperature_tau), graph);
+        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(T0, tau), graph);
+        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+    } else if (func == "gamma") {
+        Annealer annealer(myrank);
+        annealer.myrank = myrank;
+        const double final_gamma = args.hasArg("--final-gamma") ? std::get<double>(args.getArg("--final-gamma")) : 0.0;
+        const double hamiltonian_energy =
+            annealer.annealGamma(std::make_tuple(gamma, tau, final_gamma), graph, std::make_tuple(triangular_length, triangular_height));
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
-
-    // {
-    //     Annealer annealer(myrank);
-    //     annealer.myrank = myrank;
-    //     // const int gamma_tau = args.getGammaTau() != 0 ? args.getGammaTau() : 100000;
-    //     const int gamma_tau = args.hasArg("--gamma-tau") ? std::get<double>(args.getArg("--gamma-tau")) : 100000;
-    //     const double final_gamma = args.hasArg("--final-gamma") ? std::get<double>(args.getArg("--final-gamma")) : 0.0;
-    //     const double hamiltonian_energy =
-    //         annealer.annealGamma(std::make_tuple(gamma, gamma_tau, final_gamma), graph, std::make_tuple(triangular_length, triangular_height));
-    //     std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
-    // }
 
     // Can only be used when the graph is a triangular graph
     if (is_tri) {
