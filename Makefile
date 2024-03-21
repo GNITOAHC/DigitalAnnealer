@@ -5,7 +5,7 @@ CFLAGS = -Wall -O3 -std=c++20
 
 MPICC = mpicxx
 
-TARGET = main
+TARGET = main_exe
 MPI_TARGET = mpi_main
 LIB_TARGET = libmylib.a
 
@@ -55,7 +55,6 @@ $(BUILD_DIR)/lib/%.o: $(LIB_DIR)/%.cc
 
 # ===== Main target rule
 $(TARGET): $(OBJS)
-	# $(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) -L$(BUILD_DIR) -lmylib
 
 # Generic rule for .cc to .o

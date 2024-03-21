@@ -1,5 +1,5 @@
 *.o
-main
+main_exe
 mpi_main
 .DS_Store
 build
