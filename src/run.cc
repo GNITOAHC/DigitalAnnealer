@@ -36,6 +36,13 @@ int run (int argc, char **argv, const int myrank) {
     std::fstream file;
     Graph graph;
 
+    // Set the graph to triangular graph if the option is specified
+    if (is_tri) {
+        std::vector<int> v =
+            args.hasArg("--tri") ? std::get<std::vector<int> >(args.getArg("--tri")) : std::get<std::vector<int> >(args.getArg("--default-tri"));
+        triangular_length = v[0], triangular_height = v[1];
+    }
+
     // Read input from file or use default
     if (args.hasArg("--file")) {
         file.open(std::get<std::string>(args.getArg("--file")), std::ios::in);
@@ -46,24 +53,18 @@ int run (int argc, char **argv, const int myrank) {
         graph = makeGraph(triangular_length, triangular_height, gamma);
     }
 
-    // Set the graph to triangular graph if the option is specified
-    if (is_tri) {
-        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--tri"));
-        triangular_length = v[0], triangular_height = v[1];
-    }
-
     std::cout << std::setprecision(10); // Set precision to 10 digits
 
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
 
-    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "temp";
+    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
     const int tau = args.hasArg("--tau") ? std::get<int>(args.getArg("--tau")) : 100000;
 
-    if (func == "temp") {
+    if (func == "sa") { // Simulated annealing
         Annealer annealer(myrank);
         const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(T0, tau), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
-    } else if (func == "gamma") {
+    } else if (func == "sqa") { // Simulated quantum annealing
         Annealer annealer(myrank);
         annealer.myrank = myrank;
         const double final_gamma = args.hasArg("--final-gamma") ? std::get<double>(args.getArg("--final-gamma")) : 0.0;
@@ -77,7 +78,7 @@ int run (int argc, char **argv, const int myrank) {
         // const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
         // std::cout << "Order parameter length squared: " << op_length_square << std::endl;
         const std::vector<double> list_of_op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
-        std::cout << "Layer order parameter length squared:\n";
+        std::cout << "Squared order parameter:\n";
         for (int i = 0; i < list_of_op_length_square.size(); ++i) {
             printf("layer %d: %f\n", i, list_of_op_length_square[i]);
         }
@@ -91,6 +92,8 @@ int run (int argc, char **argv, const int myrank) {
 
         // graph.print();
     }
+
+    if (args.hasArg("--print")) { graph.print(); }
 
     // testSpin(4, graph);
     // graph.print();

@@ -23,7 +23,8 @@ std::vector<ArgFormat> CustomArgs::argsConstruct() const {
         { "--gamma", ARG_DOUBLE, 1 },
         { "--final-gamma", ARG_DOUBLE, 1 },
         { "--tau", ARG_INT, 1 },
-        { "--func", ARG_STRING, 1 },
+        { "--func", ARG_STRING, 1 }, // Either "sa" or "sqa"
+        { "--print", ARG_BOOL, 0 },
         { "--help", ARG_BOOL, 0, false },
     });
 };
@@ -61,7 +62,8 @@ void CustomArgs::outputHelp() const {
     std::cout << "  --gamma <gamma>                  Specify a gamma value for triangular lattice" << std::endl;
     std::cout << "  --final-gamma <gamma>            Specify a final gamma value" << std::endl;
     std::cout << "  --tau <tau>                      Specify a tau for annealer" << std::endl;
-    std::cout << "  --func <func_string>             Specify a function for annealer, either \"temp\" or \"gamma\" " << std::endl;
+    std::cout << "  --func <func_string>             Specify a function for annealer, either \"sa\" or \"sqa\" " << std::endl;
+    std::cout << "  --print                          Output the configuration" << std::endl;
     std::cout << "  --help                           Display this information" << std::endl;
     exit(0);
 }
