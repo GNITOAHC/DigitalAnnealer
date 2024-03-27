@@ -49,6 +49,14 @@ void CustomArgs::customConstraintsCheck() const {
             throw std::invalid_argument("Invalid function specified");
         }
     }
+    if (this->hasArg("--func") && std::get<std::string>(this->getArg("--func")) == "sqa") {
+        if (this->hasArg("--tri") && std::get<std::vector<int> >(this->getArg("--tri"))[1] <= 1) {
+            throw std::invalid_argument("Invalid operation, height could not be less than 2");
+        }
+        if (this->hasArg("--default-tri") && std::get<std::vector<int> >(this->getArg("--default-tri"))[1] <= 1) {
+            throw std::invalid_argument("Invalid operation, height could not be less than 2");
+        }
+    }
     return;
 }
 
