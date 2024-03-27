@@ -93,7 +93,13 @@ int run (int argc, char **argv, const int myrank) {
         // graph.print();
     }
 
-    if (args.hasArg("--print")) { graph.print(); }
+    if (args.hasArg("--print")) {
+        std::ofstream outfile;
+        std::string filename = "output" + std::to_string(myrank) + ".txt";
+        outfile.open(filename, std::ios::out);
+        graph.print(outfile);
+        outfile.close();
+    }
 
     // testSpin(4, graph);
     // graph.print();

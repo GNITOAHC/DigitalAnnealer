@@ -261,39 +261,39 @@ void Graph::updateGamma(const double& gamma, const int& length, const int& heigh
 
 /* Printer */
 
-void Graph::print() {
-    std::cout << "Adjacency List:" << std::endl;
+void Graph::print(std::ofstream& cout) {
+    cout << "Adjacency List:" << std::endl;
     for (int i = 0; i < adj_list.size(); i++) {
         AdjNode *tmp = adj_list[i];
-        std::cout << i << ": ";
+        cout << i << ": ";
         while (tmp != nullptr) {
-            std::cout << tmp->val << " " << tmp->weight << " | ";
+            cout << tmp->val << " " << tmp->weight << " | ";
             tmp = tmp->next;
         }
-        std::cout << std::endl;
+        cout << std::endl;
     }
 
-    std::cout << std::endl << "Adjacency Map:" << std::endl;
+    cout << std::endl << "Adjacency Map:" << std::endl;
     for (std::map<int, std::vector<int> >::iterator it = adj_map.begin(); it != adj_map.end(); it++) {
-        std::cout << it->first << ": ";
+        cout << it->first << ": ";
         for (int i = 0; i < it->second.size(); i++) {
-            std::cout << it->second[i] << " ";
+            cout << it->second[i] << " ";
         }
-        std::cout << std::endl;
+        cout << std::endl;
     }
 
-    std::cout << std::endl << "Constant Map: " << std::endl;
+    cout << std::endl << "Constant Map: " << std::endl;
     for (std::map<int, double>::iterator it = constant_map.begin(); it != constant_map.end(); it++) {
-        std::cout << it->first << ": " << it->second << std::endl;
+        cout << it->first << ": " << it->second << std::endl;
     }
 
-    std::cout << std::endl << "Constant: " << constant << std::endl;
+    cout << std::endl << "Constant: " << constant << std::endl;
 
-    std::cout << std::endl << "Spins:" << std::endl;
+    cout << std::endl << "Spins:" << std::endl;
     for (int i = 0; i < spins.size(); i++) {
-        std::cout << i << ": " << spins[i] << std::endl;
+        cout << i << ": " << spins[i] << std::endl;
     }
-    std::cout << std::endl;
+    cout << std::endl;
 
     return;
 }

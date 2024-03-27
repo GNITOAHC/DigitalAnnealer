@@ -1,6 +1,7 @@
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -49,7 +50,7 @@ class Graph {
     double getHamiltonianDifference(const int&);                    // Get the Hamiltonian difference given the indices to flip and the spin
 
     /* Printer */
-    void print();
+    void print(std::ofstream&);
 };
 
 #endif
