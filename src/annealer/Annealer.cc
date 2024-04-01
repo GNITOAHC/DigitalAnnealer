@@ -58,7 +58,7 @@ double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph
     return graph.getHamiltonianEnergy();
 }
 
-double Annealer::annealGamma(const std::tuple<double, double, double>& gamma, Graph& graph, const std::tuple<int, int>& graph_size) {
+double Annealer::annealGamma(const std::tuple<double, double, double>& gamma, Graph& graph) {
     const auto [gamma0, tau, final_gamma] = gamma;
     for (int i = 0; i <= tau; ++i) {
         const double gamma = gamma0 * (1 - ((double)i / tau)) + final_gamma * ((double)i / tau);
@@ -72,7 +72,7 @@ double Annealer::annealGamma(const std::tuple<double, double, double>& gamma, Gr
             randomExec(PI_accept, [&] () { graph.flipSpin(j); });
         }
         // Update the gamma: gamma, length, height
-        graph.updateGamma(gamma, std::get<0>(graph_size), std::get<1>(graph_size));
+        graph.updateGamma(gamma);
 #ifdef USE_MPI
         if (i % 8 == 0) {
             // MPI swap spins by temperature and hamiltonian energy
