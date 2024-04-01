@@ -51,7 +51,7 @@ class Graph {
                                                        const int&); // Get the order parameter length squared (Support for triangular lattice only)
     std::vector<double> getVerticalEnergyProduct(const int&);       // Get the vertical energy of the graph (Support for triangular lattice only)
     double getHamiltonianEnergy();                                  // Get the Hamiltonian energy of the graph
-    std::vector<double> getLayerHamiltonianEnergy(const int&);      // Get the Hamiltonian energy of each layer (Support for triangular lattice only)
+    std::vector<double> getLayerHamiltonianEnergy();                // Get the Hamiltonian energy of each layer
     double getHamiltonianDifference(const int&);                    // Get the Hamiltonian difference given the indices to flip and the spin
     int getLength() const;                                          // Get the length of the graph
 

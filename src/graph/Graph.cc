@@ -101,7 +101,8 @@ double Graph::getHamiltonianEnergy() {
 }
 
 // Get the Hamiltonian energy of each layer of the graph
-std::vector<double> Graph::getLayerHamiltonianEnergy(const int& height) {
+std::vector<double> Graph::getLayerHamiltonianEnergy() {
+    const int height = this->spins.size() / this->length;
     std::vector<double> list_of_energy(height, 0.0);
     double current_sum = 0.0;
     for (int i = 0; i < adj_list.size(); ++i) {

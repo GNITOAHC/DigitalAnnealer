@@ -52,6 +52,8 @@ int run (int argc, char **argv, const int myrank) {
 
         // Lock the length of the graph after reading the input
         graph.lockLength();
+        const int height = args.hasArg("--height") ? std::get<int>(args.getArg("--height")) : 4;
+        graph.growLayer(height - 1, gamma);
     }
 
     /*
@@ -82,12 +84,18 @@ int run (int argc, char **argv, const int myrank) {
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     } else if (func == "sqa") { // Simulated quantum annealing
         std::cout << "Simulated quantum annealing" << std::endl;
-        /*
-         *graph.growLayer(4);
-         */
         const double hamiltonian_energy = annealer.annealGamma(std::make_tuple(gamma, tau, final_gamma), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
+
+    /*
+     * Debug section
+     */
+    // std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy();
+    // std::cout << "Layer Hamiltonian energy:\n";
+    // for (int i = 0; i < list_of_energy.size(); ++i)
+    //     printf("layer %d: %f\n", i, list_of_energy[i]);
+    // std::cout << std::endl;
 
     // Can only be used when the graph is a triangular graph
     // if (args.hasArg("--h-tri")) {
@@ -109,7 +117,7 @@ int run (int argc, char **argv, const int myrank) {
     //     // graph.print();
     // }
 
-    if (args.hasArg("--print")) {
+    if (args.hasArg("--print-conf")) {
         std::ofstream outfile;
         std::string filename = "output" + std::to_string(myrank) + ".txt";
         outfile.open(filename, std::ios::out);

@@ -37,7 +37,7 @@ std::vector<struct argparse::ArgConstraint> CustomArgs::argsConstraint() const {
         // { "--qubo", "--file", COEXIST },
         { "--h-tri", "--file", MUTEX },
         { "--h-tri", "--qubo", MUTEX },
-        { "--h-tri", "--ini-g", COEXIST },
+        { "--h-tri", "--ini-g", REQUIRE },
     });
 }
 
