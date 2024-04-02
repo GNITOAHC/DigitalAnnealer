@@ -1,10 +1,13 @@
-#include "../../include/Helper.h"
+// #include "../../include/Helper.h"
 #include "tri.h"
 #include <complex>
 
+namespace tri {
 std::vector<double> getSquaredOP (const Graph& graph) {
     const int height = graph.spins.size() / graph.length;
     const int length = graph.length;
+    // std::cout << "Height: " << height << std::endl;
+    // std::cout << "Length: " << length << std::endl;
     const std::complex<double> image_pi(0.0, (4.0 / 3.0) * M_PI);
     const std::complex<double> math_e(M_E, 0.0);
 
@@ -19,7 +22,8 @@ std::vector<double> getSquaredOP (const Graph& graph) {
     const int total_count = graph.spins.size();
 
     for (int i = 0; i < total_count; ++i) {
-        const int layer = i / (length * length);
+        const int layer = i / length;
+        // std::cout << "Layer: " << layer << std::endl;
         switch (get_sub_lattice(i)) {
             case 0: m_color_params[layer][0] += (double)graph.spins[i]; break;
             case 1: m_color_params[layer][1] += (double)graph.spins[i]; break;
@@ -57,9 +61,13 @@ std::vector<double> getSquaredOP (const Graph& graph) {
         layer_order_parameter_length_squared[i] = order_parameter_length_squared;
     }
 
+    // for (int i = 0; i < layer_order_parameter_length_squared.size(); ++i) {
+    //     std::cout << "Layer " << i << ": " << layer_order_parameter_length_squared[i] << std::endl;
+    // }
     return layer_order_parameter_length_squared;
-    return std::vector<double>();
+    // return std::vector<double>();
 }
+} // namespace tri
 
 // Graph makeGraph (const int& length, const int& height, const double& gamma) {
 //     const double E = std::exp(1.0);

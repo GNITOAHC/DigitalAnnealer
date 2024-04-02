@@ -5,8 +5,10 @@
 
 #include <vector>
 
+namespace tri {
 // Squared order parameter
 std::vector<double> getSquaredOP(const Graph& graph);
+} // namespace tri
 // Make a triangular lattice graph ( length, height, gamma )
 // Graph makeGraph(const int&, const int&, const double&);
 
