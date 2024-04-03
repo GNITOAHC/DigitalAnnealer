@@ -192,11 +192,12 @@ void Graph::growLayer(const int& grow_count, const double& gamma) {
             AdjNode *tmp = adj_list[j];
             while (tmp != nullptr) {
                 const int corr_node = tmp->val + (length * (i + 1));
-                // Prevent adding edge to the next layer
-                if (corr_node >= length * (grow_count + 1)) {
+                // Prevent from adding edge to the next layer
+                if (tmp->val == j + length) {
                     tmp = tmp->next;
                     continue;
                 }
+                // Prevent from adding duplicate edge
                 if (index < corr_node) this->pushBack(index, corr_node, tmp->weight);
                 tmp = tmp->next;
             }
