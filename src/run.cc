@@ -1,11 +1,10 @@
 #include "./args/Args.h"
-#include "./include/Helper.h"
+#include "./graph/tri/tri.h"
 #include "run.h"
 
 #include <iomanip>
 #include <ios>
 #include <iostream>
-#include <math.h>
 #include <sstream>
 #include <vector>
 
@@ -37,7 +36,8 @@ int run (int argc, char **argv, const int myrank) {
          * Build graph for triangular lattice
          */
         std::vector<int> v = std::get<std::vector<int> >(args.getArg("--h-tri"));
-        graph = makeGraph(v[0], 1, gamma); // makeGraph(length, height, gamma)
+        // graph = makeGraph(v[0], 1, gamma); // makeGraph(length, height, gamma)
+        graph = tri::makeGraph(v[0]); // makeGraph(length)
         graph.lockLength(v[0] * v[0]);
         graph.growLayer(v[1] - 1, gamma);
     } else {
@@ -77,6 +77,16 @@ int run (int argc, char **argv, const int myrank) {
     const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
     const int tau = args.hasArg("--tau") ? std::get<int>(args.getArg("--tau")) : 100000;
 
+    /*
+     * Debug section
+     */
+    // const std::vector<double> squared_ops = tri::getSquaredOP(graph);
+    // std::cout << "Squared order parameter debug section START:\n";
+    // for (int i = 0; i < squared_ops.size(); ++i) {
+    //     printf("layer %d: %f\n", i, squared_ops[i]);
+    // }
+    // std::cout << std::endl;
+
     // Create an Annealer
     Annealer annealer(myrank);
     if (func == "sa") { // Simulated annealing
@@ -89,7 +99,7 @@ int run (int argc, char **argv, const int myrank) {
     }
 
     /*
-     * Debug section
+     * Debug section ( Hamiltonian energy of each layer )
      */
     // std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy();
     // std::cout << "Layer Hamiltonian energy:\n";
@@ -97,25 +107,18 @@ int run (int argc, char **argv, const int myrank) {
     //     printf("layer %d: %f\n", i, list_of_energy[i]);
     // std::cout << std::endl;
 
-    // Can only be used when the graph is a triangular graph
-    // if (args.hasArg("--h-tri")) {
-    //     // const double op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
-    //     // std::cout << "Order parameter length squared: " << op_length_square << std::endl;
-    //     const std::vector<double> list_of_op_length_square = graph.getOrderParameterLengthSquared(triangular_length, triangular_height);
-    //     std::cout << "Squared order parameter:\n";
-    //     for (int i = 0; i < list_of_op_length_square.size(); ++i) {
-    //         printf("layer %d: %f\n", i, list_of_op_length_square[i]);
-    //     }
-    //     std::cout << std::endl;
-    //
-    //     // std::vector<double> list_of_energy = graph.getLayerHamiltonianEnergy(triangular_height);
-    //     // std::cout << "Layer Hamiltonian energy:\n";
-    //     // for (int i = 0; i < list_of_energy.size(); ++i)
-    //     //     printf("layer %d: %f\n", i, list_of_energy[i]);
-    //     // std::cout << std::endl;
-    //
-    //     // graph.print();
-    // }
+    // Can only be used when the graph is a triangular graph (--h-tri)
+    if (args.hasArg("--h-tri")) {
+        /*
+         * Debug section ( Squared order parameters of each layer )
+         */
+        const std::vector<double> squared_ops = tri::getSquaredOP(graph);
+        std::cout << "Squared order parameter debug section END:\n";
+        for (int i = 0; i < squared_ops.size(); ++i) {
+            printf("layer %d: %f\n", i, squared_ops[i]);
+        }
+        std::cout << std::endl;
+    }
 
     if (args.hasArg("--print-conf")) {
         std::ofstream outfile;
@@ -129,25 +132,6 @@ int run (int argc, char **argv, const int myrank) {
     // graph.print();
     // std::cout << graph.getHamiltonianEnergy() << std::endl;
     return 0;
-}
-
-Graph makeGraph (const int& length, const int& height, const double& gamma) {
-    Graph graph;
-    const int length2 = length * length;
-    const double strength_between_layer = gamma == 0.0 ? 0.0 : (-0.5) * loge(tanh(gamma));
-    int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM, GETBOTTOMRIGHT };
-    for (int h = 0; h < height; ++h) {
-        for (int i = 0; i < length; ++i) {
-            for (int j = 0; j < length; ++j) {
-                const int index = h * length2 + i * length + j;
-                for (int c = 0; c < 3; ++c)
-                    graph.pushBack(index, (*macro_array[c])(h, i, j, length), 1.0);
-                if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height), strength_between_layer);
-            }
-        }
-    }
-
-    return graph;
 }
 
 Graph readInputFromQubo (std::fstream& source) {

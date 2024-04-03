@@ -1,4 +1,4 @@
-// #include "../../include/Helper.h"
+#include "../../include/Helper.h"
 #include "tri.h"
 #include <complex>
 
@@ -67,12 +67,45 @@ std::vector<double> getSquaredOP (const Graph& graph) {
     return layer_order_parameter_length_squared;
     // return std::vector<double>();
 }
+
+Graph makeGraph (const int& length) {
+    // const double E = std::exp(1.0);
+    // auto loge = [&] (double x) -> double { return std::log(x) / std::log(E); };
+
+    Graph graph;
+    // const int height = 1;
+    // const int length2 = length * length;
+    // const double gamma = 0.2;
+    // const double strength_between_layer = gamma == 0.0 ? 0.0 : (-0.5) * loge(tanh(gamma));
+    int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM, GETBOTTOMRIGHT };
+    // for (int h = 0; h < height; ++h) {
+    for (int i = 0; i < length; ++i) {
+        for (int j = 0; j < length; ++j) {
+            const int index = i * length + j;
+            for (int c = 0; c < 3; ++c)
+                graph.pushBack(index, (*macro_array[c])(0, i, j, length), 1.0);
+            // if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height), strength_between_layer);
+        }
+    }
+    // }
+
+    return graph;
+    /*
+     * Debug section
+     */
+    // std::ofstream outfile;
+    // std::string filename = "output_a.txt";
+    // outfile.open(filename, std::ios::out);
+    // graph.print(outfile);
+    // outfile.close();
+    // return graph;
+}
 } // namespace tri
 
+/*
+ * Original make graph for length, height, gamma
+ */
 // Graph makeGraph (const int& length, const int& height, const double& gamma) {
-//     const double E = std::exp(1.0);
-//     auto loge = [&] (double x) -> double { return std::log(x) / std::log(E); };
-//
 //     Graph graph;
 //     const int length2 = length * length;
 //     const double strength_between_layer = gamma == 0.0 ? 0.0 : (-0.5) * loge(tanh(gamma));
