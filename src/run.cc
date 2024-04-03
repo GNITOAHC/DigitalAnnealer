@@ -11,7 +11,6 @@
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);
-const int T0 = 2;
 
 inline double loge (double x) { return std::log(x) / std::log(E); }
 
@@ -27,6 +26,8 @@ int run (int argc, char **argv, const int myrank) {
     // Get the initial configuration values
     double gamma = args.hasArg("--ini-g") ? std::get<double>(args.getArg("--ini-g")) : 2.0;
     double final_gamma = args.hasArg("--final-g") ? std::get<double>(args.getArg("--final-g")) : 0.0;
+    double temp = args.hasArg("--ini-t") ? std::get<double>(args.getArg("--ini-t")) : 2.0;
+    double final_temp = args.hasArg("--final-t") ? std::get<double>(args.getArg("--final-t")) : 0.0;
 
     std::fstream file;
     Graph graph;
@@ -90,7 +91,7 @@ int run (int argc, char **argv, const int myrank) {
     // Create an Annealer
     Annealer annealer(myrank);
     if (func == "sa") { // Simulated annealing
-        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(T0, tau), graph);
+        const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(temp, tau, final_temp), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     } else if (func == "sqa") { // Simulated quantum annealing
         std::cout << "Simulated quantum annealing" << std::endl;

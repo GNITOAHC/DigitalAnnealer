@@ -32,10 +32,10 @@ bool Annealer::randomExec(const double rand, const std::function<void()> func) {
     return false;
 }
 
-double Annealer::annealTemp(std::tuple<double, double> temperature, Graph& graph) {
-    const auto [T0, tau] = temperature;
+double Annealer::annealTemp(std::tuple<double, double, double> temperature, Graph& graph) {
+    const auto [temp0, tau, final_temp] = temperature;
     for (int i = 0; i <= tau; ++i) {
-        const double T = T0 * (1 - ((double)i / tau));
+        const double T = temp0 * (1 - ((double)i / tau)) + final_temp * ((double)i / tau);
         const int length = graph.spins.size();
         for (int j = 0; j < length; ++j) {
             // Calculate the PI_accept
