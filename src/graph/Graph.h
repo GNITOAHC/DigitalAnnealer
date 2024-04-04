@@ -25,7 +25,8 @@ std::vector<double> getSquaredOP(const Graph& graph);
 class Graph {
     friend class Annealer;
     friend void testSpin(int, Graph);
-    friend std::vector<double> tri::getSquaredOP(const Graph&); // Support for triangular lattice only
+    /* Friend functions for triangular lattice */
+    friend std::vector<double> tri::getSquaredOP(const Graph&);
 
   private:
     std::vector<AdjNode *> adj_list;          // vector of pointers to AdjNode (sorted by index)

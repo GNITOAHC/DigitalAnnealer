@@ -44,7 +44,7 @@ std::vector<double> getSquaredOP (const Graph& graph) {
     const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
     const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
 
-    std::vector<double> layer_order_parameter_length_squared(height, 0.0);
+    std::vector<double> layer_squared_op(height, 0.0);
 
     // Iterate over each layer
     for (int i = 0; i < height; ++i) {
@@ -56,15 +56,15 @@ std::vector<double> getSquaredOP (const Graph& graph) {
         const std::complex<double> order_parameter = (m_blue + m_black * math_e_pow + m_red * math_e_pow_inv) / sqrt(3.0);
 
         // Calculate the order parameter length squared
-        const double order_parameter_length_squared = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
+        const double squared_op = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
 
-        layer_order_parameter_length_squared[i] = order_parameter_length_squared;
+        layer_squared_op[i] = squared_op;
     }
 
     // for (int i = 0; i < layer_order_parameter_length_squared.size(); ++i) {
     //     std::cout << "Layer " << i << ": " << layer_order_parameter_length_squared[i] << std::endl;
     // }
-    return layer_order_parameter_length_squared;
+    return layer_squared_op;
     // return std::vector<double>();
 }
 
@@ -100,6 +100,27 @@ Graph makeGraph (const int& length) {
     // outfile.close();
     // return graph;
 }
+
+void printTriConf (const Graph& graph, std::ofstream& cout) {
+    const int length = graph.getLength();
+    const int height = graph.getSpins().size() / length;
+    /*
+     * TODO: (m1 \t m2 \t m3)
+     * tsc format: (Squared Order Parameter)
+     * layer \t squared order parameter \t m1 \t m2 \t m3
+     */
+    cout << "layer\tsquared_op\tm1\tm2\tm3\n";
+    const std::vector<double> squared_ops = getSquaredOP(graph);
+    for (int i = 0; i < squared_ops.size(); ++i) {
+        cout << i << "\t" << squared_ops[i] << "\t";
+        /*
+         * Print the color parameters here for each layer (m1, m2. m3)
+         */
+        cout << std::endl;
+    }
+    return;
+}
+
 } // namespace tri
 
 /*

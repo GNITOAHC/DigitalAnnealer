@@ -6,11 +6,11 @@
 #include <vector>
 
 namespace tri {
-// Squared order parameter
-std::vector<double> getSquaredOP(const Graph& graph);
-Graph makeGraph(const int&); // makeGraph(length)
+
+std::vector<double> getSquaredOP(const Graph& graph); // Squared order parameter
+Graph makeGraph(const int&);                          // makeGraph(length)
+void printTriConf(const Graph&, std::ofstream&);      // printTriConf(graph)
+
 } // namespace tri
-// Make a triangular lattice graph ( length, height, gamma )
-// Graph makeGraph(const int&, const int&, const double&);
 
 #endif
