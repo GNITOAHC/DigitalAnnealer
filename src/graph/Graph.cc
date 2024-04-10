@@ -299,3 +299,12 @@ void Graph::print(std::ofstream& cout) {
 
     return;
 }
+
+void Graph::printHLayer(std::ofstream& cout) {
+    cout << "layer\thamiltonian\th_per_layer\n";
+    const std::vector<double> h_per_layer = getLayerHamiltonianEnergy();
+    for (int i = 0; i < h_per_layer.size(); ++i) {
+        cout << i << "\t" << h_per_layer[i] << "\t" << h_per_layer[i] / this->length << std::endl;
+    }
+    return;
+}

@@ -104,6 +104,21 @@ Graph makeGraph (const int& length) {
 void printTriConf (const Graph& graph, std::ofstream& cout) {
     const int length = graph.getLength();
     const int height = graph.getSpins().size() / length;
+    // Calculate params
+    std::vector<std::vector<double> > m_color_params(height, std::vector<double>(3, 0));
+    auto get_sub_lattice = [&] (const int& index) -> int { return ((index / length) + index) % 3; };
+    const std::vector<Spin> s = graph.getSpins();
+    for (int i = 0; i < s.size(); ++i) {
+        const int layer = i / length;
+        // std::cout << "Layer: " << layer << std::endl;
+        switch (get_sub_lattice(i)) {
+            case 0: m_color_params[layer][0] += (double)s[i]; break;
+            case 1: m_color_params[layer][1] += (double)s[i]; break;
+            case 2: m_color_params[layer][2] += (double)s[i]; break;
+            default: throw std::exception();
+        }
+    }
+
     /*
      * TODO: (m1 \t m2 \t m3)
      * tsc format: (Squared Order Parameter)
@@ -116,6 +131,7 @@ void printTriConf (const Graph& graph, std::ofstream& cout) {
         /*
          * Print the color parameters here for each layer (m1, m2. m3)
          */
+        cout << m_color_params[i][0] << "\t" << m_color_params[i][1] << "\t" << m_color_params[i][2];
         cout << std::endl;
     }
     return;

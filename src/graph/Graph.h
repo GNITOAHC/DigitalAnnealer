@@ -64,6 +64,7 @@ class Graph {
 
     /* Printer */
     void print(std::ofstream&);
+    void printHLayer(std::ofstream&); // Print the Hamiltonian energy of each layer (tsv) (layer hamiltonian h_per_bit)
 };
 
 #endif

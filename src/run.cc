@@ -5,17 +5,31 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <memory>
 #include <sstream>
+#include <stdarg.h>
 #include <vector>
 
 #define debug(n) std::cerr << n << std::endl;
 
-const double E = std::exp(1.0);
-
-inline double loge (double x) { return std::log(x) / std::log(E); }
-
 // Make graph with length, height and gamma
 Graph makeGraph(const int&, const int&, const double& gamma);
+// String format
+std::string format (const std::string fmt_str, ...) {
+    int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
+    std::unique_ptr<char[]> formatted;
+    va_list ap;
+    while (1) {
+        formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
+        strcpy(&formatted[0], fmt_str.c_str());
+        va_start(ap, fmt_str);
+        final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
+        va_end(ap);
+        if (final_n < 0 || final_n >= n) n += abs(final_n - n + 1);
+        else break;
+    }
+    return std::string(formatted.get());
+}
 
 int run (int argc, char **argv, const int myrank) {
 #ifdef USE_MPI
@@ -121,11 +135,44 @@ int run (int argc, char **argv, const int myrank) {
         std::cout << std::endl;
     }
 
+    /*
+     * --print-conf
+     *  Print to L<len>_H<height>_Ti<init-t>_Tf<final-t>_tau<tau>.tsv <- Simulated Annealing
+     *  Print to L<len>_H<height>_Gi<init-g>_Gf<final-g>_tau<tau>.tsv <- Simulated Quantum Annealing
+     *  Print to tri_<len>_<height>_Ti<init-t>_Tf<final-t>_tau<tau>.tsv <- Triangular lattice for Simulated Annealing
+     *  Print to tri_<len>_<height>_Gi<init-g>_Gf<final-g>_tau<tau>.tsv <- Triangular lattice for Simulated Quantum Annealing
+     */
+    std::string filenames[4] = { "L%d_H%d_Ti%f_Tf%f_tau%d.tsv", "L%d_H%d_Gi%f_Gf%f_tau%d.tsv", "tri_%d_%d_Ti%f_Tf%f_tau%d.tsv",
+                                 "tri_%d_%d_Gi%f_Gf%f_tau%d.tsv" };
+    const int length = graph.getLength(), height = graph.getHeight();
     if (args.hasArg("--print-conf")) {
+        std::string filename;
         std::ofstream outfile;
-        std::string filename = "output" + std::to_string(myrank) + ".txt";
+        /*
+         * Print the config to file for general purpose.
+         */
+        if (func == "sa") {
+            filename = format(filenames[0], length, height, temp, final_temp, tau);
+        } else if (func == "sqa") {
+            filename = format(filenames[1], length, height, gamma, final_gamma, tau);
+        }
         outfile.open(filename, std::ios::out);
-        graph.print(outfile);
+        graph.printHLayer(outfile);
+        outfile.close();
+        /*
+         * Print the config to file for triangular lattice.
+         */
+        if (args.hasArg("--h-tri")) {
+            if (func == "sa") {
+                filename = format(filenames[2], length, height, temp, final_temp, tau);
+            } else if (func == "sqa") {
+                filename = format(filenames[3], length, height, gamma, final_gamma, tau);
+            }
+            outfile.open(filename, std::ios::out);
+            tri::printTriConf(graph, outfile);
+        }
+        outfile.open(filename, std::ios::out);
+        tri::printTriConf(graph, outfile);
         outfile.close();
     }
 
