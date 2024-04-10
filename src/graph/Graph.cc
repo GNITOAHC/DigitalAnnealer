@@ -146,6 +146,7 @@ double Graph::getHamiltonianDifference(const int& index) {
 }
 
 int Graph::getLength() const { return this->length; }
+int Graph::getHeight() const { return this->spins.size() / this->length; }
 
 /* Constructor */
 Graph::Graph() {

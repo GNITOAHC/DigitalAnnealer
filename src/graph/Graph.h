@@ -60,6 +60,7 @@ class Graph {
     std::vector<double> getLayerHamiltonianEnergy();          // Get the Hamiltonian energy of each layer
     double getHamiltonianDifference(const int&);              // Get the Hamiltonian difference given the indices to flip and the spin
     int getLength() const;                                    // Get the length of the graph
+    int getHeight() const;                                    // Get the height of the graph
 
     /* Printer */
     void print(std::ofstream&);
