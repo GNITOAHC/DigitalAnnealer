@@ -108,6 +108,7 @@ void Args::addConstraint(const std::vector<ArgConstraint>& arg_constraints) {
         if (k && c && ac.type == MUTEX) throw std::invalid_argument("Mutual exclusion constraint violated " + string_format(ac.key, ac.constraint));
         if (k && !c && ac.type == COEXIST) throw std::invalid_argument("Co-existence constraint violated " + string_format(ac.key, ac.constraint));
         if (!k && c && ac.type == COEXIST) throw std::invalid_argument("Co-existence constraint violated " + string_format(ac.key, ac.constraint));
+        if (k && !c && ac.type == REQUIRE) throw std::invalid_argument("Required constraint violated" + string_format(ac.key, ac.constraint));
     }
     return;
 }

@@ -1,9 +1,12 @@
-#include <complex>
-
 #include "../include/Helper.h"
 #include "Graph.h"
 
+#include <cmath>
+
 #define debug(n) std::cerr << n << std::endl;
+
+const double E = std::exp(1.0);
+inline double loge (double x) { return std::log(x) / std::log(E); }
 
 /* Private functions */
 
@@ -100,7 +103,8 @@ double Graph::getHamiltonianEnergy() {
 }
 
 // Get the Hamiltonian energy of each layer of the graph
-std::vector<double> Graph::getLayerHamiltonianEnergy(const int& height) {
+std::vector<double> Graph::getLayerHamiltonianEnergy() {
+    const int height = this->spins.size() / this->length;
     std::vector<double> list_of_energy(height, 0.0);
     double current_sum = 0.0;
     for (int i = 0; i < adj_list.size(); ++i) {
@@ -143,62 +147,8 @@ double Graph::getHamiltonianDifference(const int& index) {
     return -2.0 * sum_to_modify;
 }
 
-// Get the order parameter length squared
-std::vector<double> Graph::getOrderParameterLengthSquared(const int& length, const int& height) {
-    const std::complex<double> image_pi(0.0, (4.0 / 3.0) * M_PI);
-    const std::complex<double> math_e(M_E, 0.0);
-
-    // Create a vector of vectors to store the color parameters and count of each color
-    // m_color_params[layer][color] = count of blue, black, red
-    std::vector<std::vector<double> > m_color_params(height, std::vector<double>(3, 0));
-
-    auto get_sub_lattice = [&] (const int& index) { return ((index / length) + index) % 3; };
-
-    const int each_color_count_per_layer_int = (length * length) / 3;
-    const double each_color_count_per_layer = (double)each_color_count_per_layer_int;
-    const int total_count = this->spins.size();
-
-    for (int i = 0; i < total_count; ++i) {
-        const int layer = i / (length * length);
-        switch (get_sub_lattice(i)) {
-            case 0: m_color_params[layer][0] += (double)this->spins[i]; break;
-            case 1: m_color_params[layer][1] += (double)this->spins[i]; break;
-            case 2: m_color_params[layer][2] += (double)this->spins[i]; break;
-            default: throw std::exception();
-        }
-    }
-
-    // Print out the m_color_params
-    // for (int i = 0; i < height; ++i) {
-    //     std::cout << "Layer " << i << ": ";
-    //     for (int j = 0; j < 3; ++j) {
-    //         std::cout << m_color_params[i][j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
-    const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
-
-    std::vector<double> layer_order_parameter_length_squared(height, 0.0);
-
-    // Iterate over each layer
-    for (int i = 0; i < height; ++i) {
-        const std::complex<double> m_blue(m_color_params[i][0] / each_color_count_per_layer, 0.0);
-        const std::complex<double> m_black(m_color_params[i][1] / each_color_count_per_layer, 0.0);
-        const std::complex<double> m_red(m_color_params[i][2] / each_color_count_per_layer, 0.0);
-
-        // Calculate the order parameter
-        const std::complex<double> order_parameter = (m_blue + m_black * math_e_pow + m_red * math_e_pow_inv) / sqrt(3.0);
-
-        // Calculate the order parameter length squared
-        const double order_parameter_length_squared = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
-
-        layer_order_parameter_length_squared[i] = order_parameter_length_squared;
-    }
-
-    return layer_order_parameter_length_squared;
-}
+int Graph::getLength() const { return this->length; }
+int Graph::getHeight() const { return this->spins.size() / this->length; }
 
 /* Constructor */
 Graph::Graph() {
@@ -207,6 +157,7 @@ Graph::Graph() {
     this->constant_map = std::map<int, double> {};
     this->spins = std::vector<Spin> {};
     this->constant = 0.0;
+    this->length = 0;
 }
 
 /* Manipulator */
@@ -231,16 +182,66 @@ void Graph::pushBack(const double& co) {
     return;
 }
 
+void Graph::growLayer(const int& grow_count, const double& gamma) {
+    const int length = this->getLength();
+    const int height = this->spins.size() / length;
+    const int origin_constant = this->constant / height;
+    const double g = (-0.5) * loge(tanh(gamma));
+    for (int i = 0; i < grow_count; ++i) {
+        // Duplicate the current layer to the new layer
+        for (int j = 0; j < length; ++j) {
+            const int index = (i + 1) * length + j; // New layer's index
+            // Add edge between the new layer
+            AdjNode *tmp = adj_list[j];
+            while (tmp != nullptr) {
+                const int corr_node = tmp->val + (length * (i + 1));
+                // Prevent from adding edge to the next layer
+                if (tmp->val == j + length) {
+                    tmp = tmp->next;
+                    continue;
+                }
+                // Prevent from adding duplicate edge
+                if (index < corr_node) this->pushBack(index, corr_node, tmp->weight);
+                tmp = tmp->next;
+            }
+            // Add constant map of the new layer
+            if (constant_map.find(j) != constant_map.end()) { this->pushBack(index, constant_map[j]); }
+        }
+        // Add constant of the new layer
+        this->constant += origin_constant;
+        // Add edge between the new layer & the previous layer
+        for (int j = 0; j < length; ++j) {
+            const int index = i * length + j; // Previous layer's index
+            const int next_layer_idx = (index + length) % (length * (grow_count + 1));
+            // std::cout << "index = " << index << " next_layer_idx = " << next_layer_idx << std::endl;
+            this->pushBack(index, next_layer_idx, g);
+        }
+    }
+    // Link back to the first layer
+    for (int j = 0; j < length; ++j) {
+        const int index = grow_count * length + j;
+        const int next_layer_idx = j;
+        // std::cout << "index = " << index << " next_layer_idx = " << next_layer_idx << std::endl;
+        this->pushBack(index, next_layer_idx, g);
+    }
+    return;
+}
+
 // Flip the spin of the given index
 void Graph::flipSpin(const int& index) { spins[index] = (spins[index] == UP) ? DOWN : UP; }
 
 // Update the gamma of the graph
-void Graph::updateGamma(const double& gamma, const int& length, const int& height) {
+void Graph::updateGamma(const double& gamma) {
     char gamma_update_flag = 0X00; // check if gamma is updated for both up and down
+    const int length = this->getLength();
+    const int height = this->spins.size() / length;
+    // std::cout << "length = " << length << " height = " << height << std::endl;
     for (int i = 0; i < adj_list.size(); ++i) {
         AdjNode *tmp = adj_list[i];
-        const int next_layer_idx = get_layer_up(i, length, height);
-        const int prev_layer_idx = get_layer_down(i, length, height);
+        // const int next_layer_idx = get_layer_up(i, length, height);
+        // const int prev_layer_idx = get_layer_down(i, length, height);
+        const int next_layer_idx = (i + length) % (length * height);
+        const int prev_layer_idx = (i - length) >= 0 ? i - length : i % length;
         // char gamma_update_flag = 0X00;
         while (tmp != nullptr) {
             if (!(gamma_update_flag ^ 0X03)) { // if gamma_update_flag == 0X03
@@ -259,41 +260,53 @@ void Graph::updateGamma(const double& gamma, const int& length, const int& heigh
     return;
 }
 
+void Graph::lockLength() { this->length = this->spins.size(); }
+void Graph::lockLength(const int& ll) { this->length = ll; }
+
 /* Printer */
 
-void Graph::print() {
-    std::cout << "Adjacency List:" << std::endl;
+void Graph::print(std::ofstream& cout) {
+    cout << "Adjacency List:" << std::endl;
     for (int i = 0; i < adj_list.size(); i++) {
         AdjNode *tmp = adj_list[i];
-        std::cout << i << ": ";
+        cout << i << ": ";
         while (tmp != nullptr) {
-            std::cout << tmp->val << " " << tmp->weight << " | ";
+            cout << tmp->val << " " << tmp->weight << " | ";
             tmp = tmp->next;
         }
-        std::cout << std::endl;
+        cout << std::endl;
     }
 
-    std::cout << std::endl << "Adjacency Map:" << std::endl;
+    cout << std::endl << "Adjacency Map:" << std::endl;
     for (std::map<int, std::vector<int> >::iterator it = adj_map.begin(); it != adj_map.end(); it++) {
-        std::cout << it->first << ": ";
+        cout << it->first << ": ";
         for (int i = 0; i < it->second.size(); i++) {
-            std::cout << it->second[i] << " ";
+            cout << it->second[i] << " ";
         }
-        std::cout << std::endl;
+        cout << std::endl;
     }
 
-    std::cout << std::endl << "Constant Map: " << std::endl;
+    cout << std::endl << "Constant Map: " << std::endl;
     for (std::map<int, double>::iterator it = constant_map.begin(); it != constant_map.end(); it++) {
-        std::cout << it->first << ": " << it->second << std::endl;
+        cout << it->first << ": " << it->second << std::endl;
     }
 
-    std::cout << std::endl << "Constant: " << constant << std::endl;
+    cout << std::endl << "Constant: " << constant << std::endl;
 
-    std::cout << std::endl << "Spins:" << std::endl;
+    cout << std::endl << "Spins:" << std::endl;
     for (int i = 0; i < spins.size(); i++) {
-        std::cout << i << ": " << spins[i] << std::endl;
+        cout << i << ": " << spins[i] << std::endl;
     }
-    std::cout << std::endl;
+    cout << std::endl;
 
+    return;
+}
+
+void Graph::printHLayer(std::ofstream& cout) {
+    cout << "layer\thamiltonian\th_per_layer\n";
+    const std::vector<double> h_per_layer = getLayerHamiltonianEnergy();
+    for (int i = 0; i < h_per_layer.size(); ++i) {
+        cout << i << "\t" << h_per_layer[i] << "\t" << h_per_layer[i] / this->length << std::endl;
+    }
     return;
 }

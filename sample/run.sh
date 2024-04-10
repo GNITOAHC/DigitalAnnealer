@@ -1,1 +1,1 @@
-./main --tri 12 32 < sample.in
+./main_exe --tri 12 32 --file sample.in

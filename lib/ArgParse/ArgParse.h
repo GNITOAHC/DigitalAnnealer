@@ -42,7 +42,7 @@ struct ArgFormat {
     ArgFormat(const std::string& s, const ArgType& t, const int& c) : key(s), type(t), arg_count(c), required(false) {}
     ArgFormat(const std::string& s, const ArgType& t, const int& c, const bool& r) : key(s), type(t), arg_count(c), required(r) {}
 };
-enum ArgConstraintType { COEXIST, MUTEX };
+enum ArgConstraintType { COEXIST, MUTEX, REQUIRE };
 struct ArgConstraint {
     std::string key;
     std::string constraint;
