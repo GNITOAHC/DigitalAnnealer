@@ -1,6 +1,8 @@
 #include "../include/Helper.h"
 #include "Graph.h"
 
+#include <cmath>
+
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);

@@ -2,6 +2,7 @@
 #include "./graph/tri/tri.h"
 #include "run.h"
 
+#include <cstring>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -43,8 +44,17 @@ int run (int argc, char **argv, const int myrank) {
     double temp = args.hasArg("--ini-t") ? std::get<double>(args.getArg("--ini-t")) : 2.0;
     double final_temp = args.hasArg("--final-t") ? std::get<double>(args.getArg("--final-t")) : 0.0;
 
+    // Check function to run & set tau
+    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
+    const int tau = args.hasArg("--tau") ? std::get<int>(args.getArg("--tau")) : 100000;
+
     std::fstream file;
     Graph graph;
+
+    /*
+     * Grow layer count for simulated quantum annealing
+     */
+    int grow_layer = 8; // Default to 8
 
     if (args.hasArg("--h-tri")) {
         /*
@@ -54,7 +64,7 @@ int run (int argc, char **argv, const int myrank) {
         // graph = makeGraph(v[0], 1, gamma); // makeGraph(length, height, gamma)
         graph = tri::makeGraph(v[0]); // makeGraph(length)
         graph.lockLength(v[0] * v[0]);
-        graph.growLayer(v[1] - 1, gamma);
+        grow_layer = v[1] - 1;
     } else {
         /*
          * Build graph for general purpose
@@ -67,8 +77,7 @@ int run (int argc, char **argv, const int myrank) {
 
         // Lock the length of the graph after reading the input
         graph.lockLength();
-        const int height = args.hasArg("--height") ? std::get<int>(args.getArg("--height")) : 4;
-        graph.growLayer(height - 1, gamma);
+        if (args.hasArg("--height")) grow_layer = std::get<int>(args.getArg("--height")) - 1;
     }
 
     /*
@@ -86,15 +95,6 @@ int run (int argc, char **argv, const int myrank) {
     /*
      * Debug section
      */
-    // return 0;
-
-    // Check function to run & set tau
-    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
-    const int tau = args.hasArg("--tau") ? std::get<int>(args.getArg("--tau")) : 100000;
-
-    /*
-     * Debug section
-     */
     // const std::vector<double> squared_ops = tri::getSquaredOP(graph);
     // std::cout << "Squared order parameter debug section START:\n";
     // for (int i = 0; i < squared_ops.size(); ++i) {
@@ -105,10 +105,12 @@ int run (int argc, char **argv, const int myrank) {
     // Create an Annealer
     Annealer annealer(myrank);
     if (func == "sa") { // Simulated annealing
+        std::cout << "Simulated annealing" << std::endl;
         const double hamiltonian_energy = annealer.annealTemp(std::make_tuple(temp, tau, final_temp), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     } else if (func == "sqa") { // Simulated quantum annealing
         std::cout << "Simulated quantum annealing" << std::endl;
+        graph.growLayer(grow_layer, gamma);
         const double hamiltonian_energy = annealer.annealGamma(std::make_tuple(gamma, tau, final_gamma), graph);
         std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
     }
@@ -170,10 +172,8 @@ int run (int argc, char **argv, const int myrank) {
             }
             outfile.open(filename, std::ios::out);
             tri::printTriConf(graph, outfile);
+            outfile.close();
         }
-        outfile.open(filename, std::ios::out);
-        tri::printTriConf(graph, outfile);
-        outfile.close();
     }
 
     // testSpin(4, graph);
