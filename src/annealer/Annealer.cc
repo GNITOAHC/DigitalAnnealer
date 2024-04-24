@@ -80,7 +80,7 @@ double Annealer::annealGamma(const std::tuple<double, double, double>& gamma, Gr
             // printf("Config before swap: ");
             // for (int i = 0; i < config.size(); ++i)
             //     printf("%d ", config[i]);
-            std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct(std::get<1>(graph_size));
+            std::vector<double> vertical_energy_list = graph.getVerticalEnergyProduct(graph.getLength());
             double vertical_energy_sum = 0.0;
             for (const auto& energy : vertical_energy_list) {
                 vertical_energy_sum += energy;
