@@ -18,7 +18,7 @@ std::vector<ArgFormat> CustomArgs::argsConstruct() const {
         // key, type, arg_count, required
         { "--qubo", ARG_BOOL, 0 },        // Transform the input to QUBO
         { "--file", ARG_STRING, 1 },      // The source file path of the input
-        { "--h-tri", ARG_VI, 2 },         // Specify a triangular lattice ( Hamiltonian )
+        { "--h-tri", ARG_INT, 1 },        // Specify a triangular lattice ( Hamiltonian )
         { "--ini-g", ARG_DOUBLE, 1 },     // Specify a initial gamma value for triangular lattice
         { "--final-g", ARG_DOUBLE, 1 },   // Specify a final gamma value
         { "--ini-t", ARG_DOUBLE, 1 },     // Specify a initial temperature value for triangular lattice
@@ -50,27 +50,28 @@ void CustomArgs::customConstraintsCheck() const {
             throw std::invalid_argument("Invalid function specified");
         }
     }
-    if (this->hasArg("--func") && std::get<std::string>(this->getArg("--func")) == "sqa") {
-        if (this->hasArg("--h-tri") && std::get<std::vector<int> >(this->getArg("--h-tri"))[1] <= 1) {
-            throw std::invalid_argument("Invalid operation, height could not be less than 2");
-        }
-    }
+    // if (this->hasArg("--func") && std::get<std::string>(this->getArg("--func")) == "sqa") {
+    //     if (this->hasArg("--h-tri") && std::get<std::vector<int> >(this->getArg("--h-tri"))[1] <= 1) {
+    //         throw std::invalid_argument("Invalid operation, height could not be less than 2");
+    //     }
+    // }
     return;
 }
 
 void CustomArgs::outputHelp() const {
     // std::cout << "Usage: " << this->argv[0] << " [options]" << std::endl;
     std::cout << "Options:" << std::endl;
-    std::cout << "  --qubo                           Specify that the graph is a QUBO" << std::endl;
-    std::cout << "  --file <source>                  The source file path of the input" << std::endl;
-    std::cout << "  --h-tri <length> <height>        Use built-in tool to create triangular lattice" << std::endl;
-    std::cout << "  --ini-g <gamma>                  Specify an initial gamma value for triangular lattice" << std::endl;
-    std::cout << "  --final-g <gamma>                Specify an final gamma value for triangular lattice" << std::endl;
-    std::cout << "  --ini-t <temp>                   Specify an initial temperature value for triangular lattice" << std::endl;
-    std::cout << "  --final-t <temp>                 Specify an final temperature value for triangular lattice" << std::endl;
-    std::cout << "  --tau <tau>                      Specify a tau for annealer" << std::endl;
-    std::cout << "  --func <func_string>             Specify a function for annealer, either \"sa\" or \"sqa\" " << std::endl;
-    std::cout << "  --print-conf                     Output the configuration" << std::endl;
-    std::cout << "  --help                           Display this information" << std::endl;
+    std::cout << "  --qubo                     Specify that the graph is a QUBO" << std::endl;
+    std::cout << "  --file <source>            The source file path of the input" << std::endl;
+    std::cout << "  --h-tri <length>           Use built-in tool to create triangular lattice" << std::endl;
+    std::cout << "  --ini-g <gamma>            Specify an initial gamma value for triangular lattice" << std::endl;
+    std::cout << "  --final-g <gamma>          Specify an final gamma value for triangular lattice" << std::endl;
+    std::cout << "  --ini-t <temp>             Specify an initial temperature value for triangular lattice" << std::endl;
+    std::cout << "  --final-t <temp>           Specify an final temperature value for triangular lattice" << std::endl;
+    std::cout << "  --tau <tau>                Specify a tau for annealer" << std::endl;
+    std::cout << "  --func <func_string>       Specify a function for annealer, either \"sa\" or \"sqa\" " << std::endl;
+    std::cout << "  --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8" << std::endl;
+    std::cout << "  --print-conf               Output the configuration" << std::endl;
+    std::cout << "  --help                     Display this information" << std::endl;
     exit(0);
 }

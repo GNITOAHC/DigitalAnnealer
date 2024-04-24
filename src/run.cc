@@ -54,17 +54,17 @@ int run (int argc, char **argv, const int myrank) {
     /*
      * Grow layer count for simulated quantum annealing
      */
-    int grow_layer = 8; // Default to 8
+    int grow_layer = 7; // Grow 7 layers i.e. 8 layers in total
 
     if (args.hasArg("--h-tri")) {
         /*
          * Build graph for triangular lattice
          */
-        std::vector<int> v = std::get<std::vector<int> >(args.getArg("--h-tri"));
+        const int tri_width = std::get<int>(args.getArg("--h-tri"));
         // graph = makeGraph(v[0], 1, gamma); // makeGraph(length, height, gamma)
-        graph = tri::makeGraph(v[0]); // makeGraph(length)
-        graph.lockLength(v[0] * v[0]);
-        grow_layer = v[1] - 1;
+        graph = tri::makeGraph(tri_width); // makeGraph(length)
+        graph.lockLength(tri_width * tri_width);
+        if (args.hasArg("--height")) grow_layer = std::get<int>(args.getArg("--height")) - 1;
     } else {
         /*
          * Build graph for general purpose
