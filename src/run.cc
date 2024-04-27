@@ -162,6 +162,17 @@ int run (int argc, char **argv, const int myrank) {
         graph.printHLayer(outfile);
         outfile.close();
         /*
+         * Print the config to file.
+         */
+        if (func == "sa") {
+            filename = format("cfg_" + filenames[0], length, height, temp, final_temp, tau);
+        } else if (func == "sqa") {
+            filename = format("cfg_" + filenames[1], length, height, gamma, final_gamma, tau);
+        }
+        outfile.open(filename, std::ios::out);
+        graph.printConfig(outfile);
+        outfile.close();
+        /*
          * Print the config to file for triangular lattice.
          */
         if (args.hasArg("--h-tri")) {
