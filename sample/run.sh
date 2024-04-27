@@ -1,1 +1,1 @@
-./main_exe --tri 12 32 --file sample.in
+./main_exe --h-tri 9 --ini-g 0.2 --func sa
