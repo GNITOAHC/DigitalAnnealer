@@ -160,6 +160,15 @@ Graph::Graph() {
     this->length = 0;
 }
 
+Graph::Graph(const Graph& g) {
+    this->adj_list = g.adj_list;
+    this->adj_map = g.adj_map;
+    this->constant_map = g.constant_map;
+    this->spins = g.spins;
+    this->constant = g.constant;
+    this->length = g.length;
+}
+
 /* Manipulator */
 
 // Push back an edge

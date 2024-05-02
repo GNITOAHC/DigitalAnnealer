@@ -42,6 +42,7 @@ class Graph {
   public:
     /* Constructor */
     Graph();
+    Graph(const Graph&); // Copy constructor
 
     /* Manipulator */
     void pushBack(const double&);                         // Push back a constant
