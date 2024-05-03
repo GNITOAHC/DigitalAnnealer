@@ -28,7 +28,7 @@ class Graph {
     /* Friend functions for triangular lattice */
     friend std::vector<double> tri::getSquaredOP(const Graph&);
 
-  private:
+  protected:
     std::vector<AdjNode *> adj_list;          // vector of pointers to AdjNode (sorted by index)
     std::map<int, std::vector<int> > adj_map; // index of node -> vector of neighbors
     std::map<int, double> constant_map;       // index of node -> constant

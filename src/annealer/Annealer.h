@@ -6,7 +6,7 @@
 #include "../graph/Graph.h"
 
 class Annealer {
-  private:
+  protected:
     bool randomExec(const double, const std::function<void()>);
 
   public:
