@@ -72,7 +72,7 @@ std::vector<double> Graph::getVerticalEnergyProduct(const int& length) {
 }
 
 // Get the Hamiltonian energy of the graph
-double Graph::getHamiltonianEnergy() {
+double Graph::getHamiltonianEnergy() const {
     double sum = 0.0;
     // std::cout << "adj_list.size() = " << adj_list.size() << std::endl;
     for (int i = 0; i < adj_list.size(); ++i) {
