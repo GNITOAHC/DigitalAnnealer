@@ -68,6 +68,72 @@ std::vector<double> getSquaredOP (const Graph& graph) {
     // return std::vector<double>();
 }
 
+std::vector<double> getSquaredOP (const std::vector<Spin>& spins, const int length) {
+    // const int height = graph.spins.size() / graph.length;
+    // const int length = graph.length;
+    const int height = spins.size() / length;
+    // std::cout << "Height: " << height << std::endl;
+    // std::cout << "Length: " << length << std::endl;
+    const std::complex<double> image_pi(0.0, (4.0 / 3.0) * M_PI);
+    const std::complex<double> math_e(M_E, 0.0);
+
+    // Create a vector of vectors to store the color parameters and count of each color
+    // m_color_params[layer][color] = count of blue, black, red
+    std::vector<std::vector<double> > m_color_params(height, std::vector<double>(3, 0));
+
+    auto get_sub_lattice = [&] (const int& index) { return ((index / length) + index) % 3; };
+
+    const int each_color_count_per_layer_int = (length * length) / 3;
+    const double each_color_count_per_layer = (double)each_color_count_per_layer_int;
+    const int total_count = spins.size();
+
+    for (int i = 0; i < total_count; ++i) {
+        const int layer = i / length;
+        // std::cout << "Layer: " << layer << std::endl;
+        switch (get_sub_lattice(i)) {
+            case 0: m_color_params[layer][0] += (double)spins[i]; break;
+            case 1: m_color_params[layer][1] += (double)spins[i]; break;
+            case 2: m_color_params[layer][2] += (double)spins[i]; break;
+            default: throw std::exception();
+        }
+    }
+
+    // Print out the m_color_params
+    // for (int i = 0; i < height; ++i) {
+    //     std::cout << "Layer " << i << ": ";
+    //     for (int j = 0; j < 3; ++j) {
+    //         std::cout << m_color_params[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
+    const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
+
+    std::vector<double> layer_squared_op(height, 0.0);
+
+    // Iterate over each layer
+    for (int i = 0; i < height; ++i) {
+        const std::complex<double> m_blue(m_color_params[i][0] / each_color_count_per_layer, 0.0);
+        const std::complex<double> m_black(m_color_params[i][1] / each_color_count_per_layer, 0.0);
+        const std::complex<double> m_red(m_color_params[i][2] / each_color_count_per_layer, 0.0);
+
+        // Calculate the order parameter
+        const std::complex<double> order_parameter = (m_blue + m_black * math_e_pow + m_red * math_e_pow_inv) / sqrt(3.0);
+
+        // Calculate the order parameter length squared
+        const double squared_op = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
+
+        layer_squared_op[i] = squared_op;
+    }
+
+    // for (int i = 0; i < layer_order_parameter_length_squared.size(); ++i) {
+    //     std::cout << "Layer " << i << ": " << layer_order_parameter_length_squared[i] << std::endl;
+    // }
+    return layer_squared_op;
+    // return std::vector<double>();
+}
+
 Graph makeGraph (const int& length) {
     // const double E = std::exp(1.0);
     // auto loge = [&] (double x) -> double { return std::log(x) / std::log(E); };
