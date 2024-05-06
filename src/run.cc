@@ -11,6 +11,10 @@
 #include <stdarg.h>
 #include <vector>
 
+#include "./algo/sa/sa.h"
+#include "./algo/sqa/sqa.h"
+#include "./include/AnnealFunc.h"
+
 #define debug(n) std::cerr << n << std::endl;
 
 // Make graph with length, height and gamma
@@ -50,6 +54,41 @@ int run (int argc, char **argv, const int myrank) {
 
     std::fstream file;
     Graph graph;
+
+    /*
+     * Debug section start
+     */
+    file.open(std::get<std::string>(args.getArg("--file")), std::ios::in);
+    graph = readInput(file);
+    if (file.is_open()) file.close();
+    graph.lockLength();
+    struct Params_SA params = {
+        .rank = myrank,
+        .init_t = temp,
+        .final_t = final_temp,
+        .tau = tau,
+    };
+    Anlr_SA sqa(graph, params);
+    std::ofstream outfile;
+
+    std::cout << "hamiltonian_energy: " << sqa.getHamiltonianEnergy() << std::endl;
+
+    outfile.open("tmp.txt", std::ios::out);
+    sqa.printConfig(outfile);
+    outfile.close();
+
+    sqa.anneal();
+
+    outfile.open("tmp1.txt", std::ios::out);
+    sqa.printConfig(outfile);
+    outfile.close();
+
+    std::cout << "hamiltonian_energy: " << sqa.getHamiltonianEnergy() << std::endl;
+
+    return 0;
+    /*
+     * Debug section end
+     */
 
     /*
      * Grow layer count for simulated quantum annealing
