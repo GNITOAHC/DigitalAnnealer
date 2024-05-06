@@ -58,15 +58,15 @@ class Graph {
     std::vector<Spin> getSpins() const;                       // Get the spin config vector of the graph
     std::vector<double> getVerticalEnergyProduct(const int&); // Get the vertical energy of the graph (Support for triangular lattice only)
     double getHamiltonianEnergy() const;                      // Get the Hamiltonian energy of the graph
-    std::vector<double> getLayerHamiltonianEnergy();          // Get the Hamiltonian energy of each layer
+    std::vector<double> getLayerHamiltonianEnergy() const;    // Get the Hamiltonian energy of each layer
     double getHamiltonianDifference(const int&);              // Get the Hamiltonian difference given the indices to flip and the spin
     int getLength() const;                                    // Get the length of the graph
     int getHeight() const;                                    // Get the height of the graph
 
     /* Printer */
     void print(std::ofstream&);
-    void printHLayer(std::ofstream&); // Print the Hamiltonian energy of each layer (tsv) (layer hamiltonian h_per_bit)
-    void printConfig(std::ofstream&); // Print the configuration of the graph (tsv) (spin config)
+    void printHLayer(std::ofstream&) const; // Print the Hamiltonian energy of each layer (tsv) (layer hamiltonian h_per_bit)
+    void printConfig(std::ofstream&) const; // Print the configuration of the graph (tsv) (spin config)
 };
 
 #endif
