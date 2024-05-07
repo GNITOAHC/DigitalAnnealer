@@ -167,6 +167,41 @@ Graph makeGraph (const int& length) {
     // return graph;
 }
 
+void printTriConf(const std::vector<Spin>& spins, const int& length, std::ofstream& cout) {
+    const int height = spins.size() / length;
+    // Calculate params
+    std::vector<std::vector<double> > m_color_params(height, std::vector<double>(3, 0));
+    auto get_sub_lattice = [&] (const int& index) -> int { return ((index / length) + index) % 3; };
+    // const std::vector<Spin> s = graph.getSpins();
+    for (int i = 0; i < spins.size(); ++i) {
+        const int layer = i / length;
+        // std::cout << "Layer: " << layer << std::endl;
+        switch (get_sub_lattice(i)) {
+            case 0: m_color_params[layer][0] += (double)spins[i]; break;
+            case 1: m_color_params[layer][1] += (double)spins[i]; break;
+            case 2: m_color_params[layer][2] += (double)spins[i]; break;
+            default: throw std::exception();
+        }
+    }
+
+    /*
+     * TODO: (m1 \t m2 \t m3)
+     * tsc format: (Squared Order Parameter)
+     * layer \t squared order parameter \t m1 \t m2 \t m3
+     */
+    cout << "layer\tsquared_op\tm1\tm2\tm3\n";
+    const std::vector<double> squared_ops = getSquaredOP(spins, length);
+    for (int i = 0; i < squared_ops.size(); ++i) {
+        cout << i << "\t" << squared_ops[i] << "\t";
+        /*
+         * Print the color parameters here for each layer (m1, m2. m3)
+         */
+        cout << m_color_params[i][0] << "\t" << m_color_params[i][1] << "\t" << m_color_params[i][2];
+        cout << std::endl;
+    }
+    return;
+}
+
 void printTriConf (const Graph& graph, std::ofstream& cout) {
     const int length = graph.getLength();
     const int height = graph.getSpins().size() / length;

@@ -7,10 +7,11 @@
 
 namespace tri {
 
-std::vector<double> getSquaredOP(const Graph& graph); // Squared order parameter
-std::vector<double> getSquaredOP(const std::vector<Spin>&, const int); // graph.spins, graph.length
-Graph makeGraph(const int&);                          // makeGraph(length)
-void printTriConf(const Graph&, std::ofstream&);      // printTriConf(graph)
+std::vector<double> getSquaredOP(const Graph& graph);                    // Squared order parameter
+std::vector<double> getSquaredOP(const std::vector<Spin>&, const int);   // graph.spins, graph.length
+Graph makeGraph(const int&);                                             // makeGraph(length)
+void printTriConf(const Graph&, std::ofstream&);                         // printTriConf(graph)
+void printTriConf(const std::vector<Spin>&, const int&, std::ofstream&); // printTriConf(graph.spins)
 
 } // namespace tri
 
