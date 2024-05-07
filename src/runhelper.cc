@@ -69,7 +69,7 @@ void printTriSA (const Anlr_SA& sa, const Params_SA& p) {
 
     std::string filename = format(getTriName(ANNEAL_FUNC::SA), l, h, it, ft, t);
     outfile.open(filename, std::ios::out);
-    tri::printTriConf(sa.getGraph(), outfile);
+    tri::printTriConf(sa.getSpins(), sa.getLength(), outfile);
     outfile.close();
 }
 
@@ -96,6 +96,6 @@ void printTriSQA (const Anlr_SQA& sqa, const Params_SQA& p) {
     std::ofstream outfile;
     std::string filename = format(getTriName(ANNEAL_FUNC::SQA), l, h, ig, fg, t);
     outfile.open(filename, std::ios::out);
-    tri::printTriConf(sqa.getGraph(), outfile);
+    tri::printTriConf(sqa.getSpins(), sqa.getLength(), outfile);
     outfile.close();
 }
