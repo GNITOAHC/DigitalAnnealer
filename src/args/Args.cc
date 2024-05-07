@@ -58,6 +58,13 @@ void CustomArgs::customConstraintsCheck() const {
     return;
 }
 
+ANNEAL_FUNC CustomArgs::getStrategy() const {
+    if (!this->hasArg("--func")) return ANNEAL_FUNC::NIL;
+    if (std::get<std::string>(this->getArg("--func")) == "sa") return ANNEAL_FUNC::SA;
+    if (std::get<std::string>(this->getArg("--func")) == "sqa") return ANNEAL_FUNC::SQA;
+    return NIL;
+}
+
 void CustomArgs::outputHelp() const {
     // std::cout << "Usage: " << this->argv[0] << " [options]" << std::endl;
     std::cout << "Options:" << std::endl;
