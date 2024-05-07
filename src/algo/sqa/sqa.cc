@@ -1,10 +1,11 @@
 #include "sqa.h"
 
 // Grph_SQA Constructor
-Anlr_SQA::Grph_SQA::Grph_SQA(const Graph& g) : Graph(g) {
-    std::cout << "Grph_SQA Constructor" << std::endl;
-    return;
-}
+Anlr_SQA::Grph_SQA::Grph_SQA() : Graph() { return; }
+Anlr_SQA::Grph_SQA::Grph_SQA(const Graph& g) : Graph(g) { return; }
+
+// Grph_SQA getParams
+Params_SQA Anlr_SQA::getParams() const { return this->params; }
 
 // Grph_SQA updateGamma
 void Anlr_SQA::Grph_SQA::updateGamma(const double& gamma) {
@@ -31,6 +32,11 @@ void Anlr_SQA::Grph_SQA::updateGamma(const double& gamma) {
     }
     return;
 }
+
+// Reexported functions from Graph
+int Anlr_SQA::getLength() const { return this->graph.getLength(); }
+int Anlr_SQA::getHeight() const { return this->graph.getHeight(); }
+std::vector<Spin> Anlr_SQA::getSpins() const { return this->graph.getSpins(); }
 
 // Grph_SQA growLayer
 const double E = std::exp(1.0);
@@ -78,14 +84,16 @@ void Anlr_SQA::Grph_SQA::growLayer(const int& grow_count, const double& gamma) {
 }
 
 // Anlr_SQA Constructor
+Anlr_SQA::Anlr_SQA() : Annealer(0), graph() {}
 Anlr_SQA::Anlr_SQA(const Graph& g, const int& rank) : Annealer(rank), graph(g) {}
 Anlr_SQA::Anlr_SQA(const Graph& g, const Params_SQA& params) : Annealer(params.rank), graph(g), params(params) {}
 
 // Anlr_SQA growLayer
 void Anlr_SQA::growLayer(const int& grow_count, const double& gamma) { return this->graph.growLayer(grow_count, gamma); }
 
-// Anlr_SQA printConfig
-void Anlr_SQA::printConfig(std::ofstream& out) { return this->graph.printConfig(out); }
+// Anlr_SQA Printer
+void Anlr_SQA::printConfig(std::ofstream& out) const { return this->graph.printConfig(out); }
+void Anlr_SQA::printHLayer(std::ofstream& out) const { return this->graph.printHLayer(out); }
 
 // Anlr_SQA anneal
 double Anlr_SQA::anneal() {

@@ -1,24 +1,30 @@
 #include "./sa.h"
 
 // Grph_SA Constructor
-Anlr_SA::Grph_SA::Grph_SA(const Graph& g) : Graph(g) {
-    std::cout << "Grph_SQA Constructor" << std::endl;
-    return;
-}
+Anlr_SA::Grph_SA::Grph_SA() : Graph() { return; }
+Anlr_SA::Grph_SA::Grph_SA(const Graph& g) : Graph(g) { return; }
+
+// Anlr_SA getParams
+Params_SA Anlr_SA::getParams() const { return this->params; }
 
 // Anlr_SA Constructor
-Anlr_SA::Anlr_SA(const Graph& g, const Params_SA& p) : Annealer(p.rank), graph(g), params(p) {
-    std::cout << "Anlr_SA Constructor" << std::endl;
-    return;
-}
+Anlr_SA::Anlr_SA() : Annealer(0), graph() { return; }
+Anlr_SA::Anlr_SA(const Graph& g, const Params_SA& p) : Annealer(p.rank), graph(g), params(p) { return; }
 
-// Anlr_SQA printConfig
-void Anlr_SA::printConfig(std::ofstream& out) { return this->graph.printConfig(out); }
+// Anlr_SA Reexported functions from Graph
+int Anlr_SA::getLength() const { return this->graph.getLength(); }
+int Anlr_SA::getHeight() const { return this->graph.getHeight(); }
+std::vector<Spin> Anlr_SA::getSpins() const { return this->graph.getSpins(); }
+
+// Anlr_SQA Printer
+void Anlr_SA::printConfig(std::ofstream& out) const { return this->graph.printConfig(out); }
+void Anlr_SA::printHLayer(std::ofstream& out) const { return this->graph.printHLayer(out); }
 
 // Anlr_SA anneal
 double Anlr_SA::anneal() {
     const double temp0 = this->params.init_t, final_temp = this->params.final_t;
     const int tau = this->params.tau;
+    std::cout << temp0 << " " << final_temp << " " << tau << std::endl;
     for (int i = 0; i <= tau; ++i) {
         const double T = temp0 * (1 - ((double)i / tau)) + final_temp * ((double)i / tau);
         const int length = graph.spins.size();
@@ -28,7 +34,7 @@ double Anlr_SA::anneal() {
             const double PI_accept = std::min(1.0, std::exp(-delta_E / T));
 
             // Flip the spin with probability PI_accept
-            randomExec(PI_accept, [&] () { graph.flipSpin(j); });
+            this->randomExec(PI_accept, [&] () { graph.flipSpin(j); });
         }
     }
     return this->graph.getHamiltonianEnergy();

@@ -19,6 +19,7 @@ class Anlr_SQA : public Annealer {
         friend class Anlr_SQA;
 
       public:
+        Grph_SQA();
         Grph_SQA(const Graph&);
         void updateGamma(const double&);
         void growLayer(const int&, const double&);
@@ -27,13 +28,27 @@ class Anlr_SQA : public Annealer {
     Params_SQA params;
 
   public:
+    Anlr_SQA();
     Anlr_SQA(const Graph&, const int&); // graph, rank
     Anlr_SQA(const Graph&, const Params_SQA& params);
+    Params_SQA getParams() const;
+
+    // Virtual functions
+    double anneal();
+
+    // Reexported functions from Graph
+    int getLength() const;
+    int getHeight() const;
+    std::vector<Spin> getSpins() const;
+
+    Grph_SQA getGraph () const { return this->graph; }
 
     void growLayer(const int&, const double&);
-    void printConfig(std::ofstream&);
-    double anneal();
     double getHamiltonianEnergy() const;
+
+    // Printer
+    void printHLayer(std::ofstream&) const;
+    void printConfig(std::ofstream&) const;
 };
 
 #endif
