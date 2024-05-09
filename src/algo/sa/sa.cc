@@ -1,4 +1,5 @@
 #include "./sa.h"
+#include <cmath>
 
 #ifdef USE_MPI
 #include "../../annealer/MpiAnnealer.h"

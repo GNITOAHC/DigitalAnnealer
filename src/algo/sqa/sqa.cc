@@ -1,5 +1,6 @@
 #include "sqa.h"
 #include <numeric>
+#include <cmath>
 
 #ifdef USE_MPI
 #include "../../annealer/MpiAnnealer.h"
