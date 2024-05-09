@@ -1,5 +1,9 @@
 #include "./sa.h"
 
+#ifdef USE_MPI
+#include "../../annealer/MpiAnnealer.h"
+#endif
+
 // Grph_SA Constructor
 Anlr_SA::Grph_SA::Grph_SA() : Graph() { return; }
 Anlr_SA::Grph_SA::Grph_SA(const Graph& g) : Graph(g) { return; }
@@ -36,9 +40,24 @@ double Anlr_SA::anneal() {
             // Flip the spin with probability PI_accept
             this->randomExec(PI_accept, [&] () { graph.flipSpin(j); });
         }
+
+#ifdef USE_MPI
+        deltaSGenFunc deltaS = [] (double& src_temp, double& src_energy, double& target_temp, double& target_energy) {
+            return ((1 / target_temp) - (1 / src_temp)) * (target_energy - src_energy);
+        };
+        if (i % 8 == 0) {
+            std::vector<Spin> config = this->graph.getSpins();
+            swap(this->myrank, T, graph.getHamiltonianEnergy(), config, deltaS);
+        }
+#endif
     }
     return this->graph.getHamiltonianEnergy();
 }
 
 // Anlr_SA getHamiltonianEnergy
 double Anlr_SA::getHamiltonianEnergy() const { return this->graph.getHamiltonianEnergy(); }
+
+// Anlr_SA deltaS
+double Anlr_SA::deltaS(double& src_temp, double& src_energy, double& target_temp, double& target_energy) {
+    return ((1 / target_temp) - (1 / src_temp)) * (target_energy - src_energy);
+}

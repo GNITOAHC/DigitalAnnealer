@@ -35,9 +35,12 @@ class Anlr_SA : public Annealer {
     int getHeight() const;
     std::vector<Spin> getSpins() const;
 
+    // Getter
     Grph_SA getGraph () const { return this->graph; }
-
     double getHamiltonianEnergy() const;
+
+    // SA functions
+    double deltaS(double&, double&, double&, double&);
 
     // Printer
     void printHLayer(std::ofstream&) const;
