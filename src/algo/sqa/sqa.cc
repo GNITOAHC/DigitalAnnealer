@@ -1,6 +1,6 @@
 #include "sqa.h"
-#include <numeric>
 #include <cmath>
+#include <numeric>
 
 #ifdef USE_MPI
 #include "../../annealer/MpiAnnealer.h"
@@ -148,13 +148,13 @@ double Anlr_SQA::getVerticalEnergySum() const {
     for (int i = 0; i < length; ++i) {
         const int self_idx = this->graph.adj_list[i]->val;
         AdjNode *tmp = this->graph.adj_list[i];
-        int current_layer = 0;
+        // int current_layer = 0;
 
         // \sum_{i=1}^L { \sum_{l=1}^{L_tau} { s_i^l * s_i^{l+1} } }
         while (tmp->val != self_idx) {
             const int layer_up_idx = (tmp->val + length) % (length * this->params.layer_count);
             list_of_energy[i] += (double)this->graph.spins[tmp->val] * (double)this->graph.spins[layer_up_idx];
-            ++current_layer;
+            // ++current_layer;
         }
     }
 
