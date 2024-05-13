@@ -15,18 +15,9 @@ struct AdjNode {
     AdjNode(int v, double w) : val(v), weight(w), next(nullptr) {}
 };
 
-class Graph;
-
-// Triangular lattice specific functions
-namespace tri {
-std::vector<double> getSquaredOP(const Graph& graph);
-}
-
 class Graph {
     friend class Annealer;
     friend void testSpin(int, Graph);
-    /* Friend functions for triangular lattice */
-    friend std::vector<double> tri::getSquaredOP(const Graph&);
 
   protected:
     std::vector<AdjNode *> adj_list;          // vector of pointers to AdjNode (sorted by index)
