@@ -117,7 +117,7 @@ double Anlr_SQA::anneal() {
             const double PI_accept = std::min(1.0, std::exp(-delta_E));
 
             // Flip the spin with probability PI_accept
-            randomExec(PI_accept, [&] () { graph.flipSpin(j); });
+            this->randomExec(PI_accept, [&] () { graph.flipSpin(j); });
         }
         // Update the gamma: gamma, length, height
         graph.updateGamma(gamma);
