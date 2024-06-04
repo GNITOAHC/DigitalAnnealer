@@ -41,10 +41,15 @@ class Anlr_SQA : public Annealer {
     int getHeight() const;
     std::vector<Spin> getSpins() const;
 
+    // Getter
     Grph_SQA getGraph () const { return this->graph; }
-
-    void growLayer(const int&, const double&);
     double getHamiltonianEnergy() const;
+
+    // SQA functions
+    void growLayer(const int&, const double&);
+
+    // MPI functions (SQA)
+    double getVerticalEnergySum() const;
 
     // Printer
     void printHLayer(std::ofstream&) const;

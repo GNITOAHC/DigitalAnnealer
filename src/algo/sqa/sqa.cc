@@ -1,4 +1,10 @@
 #include "sqa.h"
+#include <cmath>
+#include <numeric>
+
+#ifdef USE_MPI
+#include "../../annealer/MpiAnnealer.h"
+#endif
 
 // Grph_SQA Constructor
 Anlr_SQA::Grph_SQA::Grph_SQA() : Graph() { return; }
@@ -111,10 +117,21 @@ double Anlr_SQA::anneal() {
             const double PI_accept = std::min(1.0, std::exp(-delta_E));
 
             // Flip the spin with probability PI_accept
-            randomExec(PI_accept, [&] () { graph.flipSpin(j); });
+            this->randomExec(PI_accept, [&] () { graph.flipSpin(j); });
         }
         // Update the gamma: gamma, length, height
         graph.updateGamma(gamma);
+
+#ifdef USE_MPI
+        deltaSGenFunc deltaS = [] (double& src_gamma, double& src_energy, double& target_gamma, double& target_energy) -> double {
+            return (target_gamma - src_gamma) * (target_energy - src_energy);
+        };
+        if (i % 8 == 0) {
+            std::vector<Spin> config = graph.getSpins();
+            double vertical_energy_sum = this->getVerticalEnergySum();
+            swap(this->params.rank, gamma, vertical_energy_sum, config, deltaS);
+        }
+#endif
     }
 
     return this->graph.getHamiltonianEnergy();
@@ -122,3 +139,24 @@ double Anlr_SQA::anneal() {
 
 // Anlr_SQA getHamiltonianEnergy
 double Anlr_SQA::getHamiltonianEnergy() const { return this->graph.getHamiltonianEnergy(); }
+
+// Anlr_SQA getVerticalEnergySum
+double Anlr_SQA::getVerticalEnergySum() const {
+    const int length = this->graph.getLength();
+    std::vector<double> list_of_energy(length, 0.0);
+
+    for (int i = 0; i < length; ++i) {
+        const int self_idx = this->graph.adj_list[i]->val;
+        AdjNode *tmp = this->graph.adj_list[i];
+        // int current_layer = 0;
+
+        // \sum_{i=1}^L { \sum_{l=1}^{L_tau} { s_i^l * s_i^{l+1} } }
+        while (tmp->val != self_idx) {
+            const int layer_up_idx = (tmp->val + length) % (length * this->params.layer_count);
+            list_of_energy[i] += (double)this->graph.spins[tmp->val] * (double)this->graph.spins[layer_up_idx];
+            // ++current_layer;
+        }
+    }
+
+    return std::accumulate(list_of_energy.begin(), list_of_energy.end(), 0.0);
+}
