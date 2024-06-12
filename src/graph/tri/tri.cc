@@ -3,9 +3,10 @@
 #include <complex>
 
 namespace tri {
-std::vector<double> getSquaredOP (const Graph& graph) {
-    const int height = graph.spins.size() / graph.length;
-    const int length = graph.length;
+std::vector<double> getSquaredOP (const std::vector<Spin>& spins, const int length) {
+    // const int height = graph.spins.size() / graph.length;
+    // const int length = graph.length;
+    const int height = spins.size() / length;
     // std::cout << "Height: " << height << std::endl;
     // std::cout << "Length: " << length << std::endl;
     const std::complex<double> image_pi(0.0, (4.0 / 3.0) * M_PI);
@@ -19,15 +20,15 @@ std::vector<double> getSquaredOP (const Graph& graph) {
 
     const int each_color_count_per_layer_int = (length * length) / 3;
     const double each_color_count_per_layer = (double)each_color_count_per_layer_int;
-    const int total_count = graph.spins.size();
+    const int total_count = spins.size();
 
     for (int i = 0; i < total_count; ++i) {
         const int layer = i / length;
         // std::cout << "Layer: " << layer << std::endl;
         switch (get_sub_lattice(i)) {
-            case 0: m_color_params[layer][0] += (double)graph.spins[i]; break;
-            case 1: m_color_params[layer][1] += (double)graph.spins[i]; break;
-            case 2: m_color_params[layer][2] += (double)graph.spins[i]; break;
+            case 0: m_color_params[layer][0] += (double)spins[i]; break;
+            case 1: m_color_params[layer][1] += (double)spins[i]; break;
+            case 2: m_color_params[layer][2] += (double)spins[i]; break;
             default: throw std::exception();
         }
     }
@@ -101,20 +102,19 @@ Graph makeGraph (const int& length) {
     // return graph;
 }
 
-void printTriConf (const Graph& graph, std::ofstream& cout) {
-    const int length = graph.getLength();
-    const int height = graph.getSpins().size() / length;
+void printTriConf (const std::vector<Spin>& spins, const int& length, std::ofstream& cout) {
+    const int height = spins.size() / length;
     // Calculate params
     std::vector<std::vector<double> > m_color_params(height, std::vector<double>(3, 0));
     auto get_sub_lattice = [&] (const int& index) -> int { return ((index / length) + index) % 3; };
-    const std::vector<Spin> s = graph.getSpins();
-    for (int i = 0; i < s.size(); ++i) {
+    // const std::vector<Spin> s = graph.getSpins();
+    for (int i = 0; i < spins.size(); ++i) {
         const int layer = i / length;
         // std::cout << "Layer: " << layer << std::endl;
         switch (get_sub_lattice(i)) {
-            case 0: m_color_params[layer][0] += (double)s[i]; break;
-            case 1: m_color_params[layer][1] += (double)s[i]; break;
-            case 2: m_color_params[layer][2] += (double)s[i]; break;
+            case 0: m_color_params[layer][0] += (double)spins[i]; break;
+            case 1: m_color_params[layer][1] += (double)spins[i]; break;
+            case 2: m_color_params[layer][2] += (double)spins[i]; break;
             default: throw std::exception();
         }
     }
@@ -125,7 +125,7 @@ void printTriConf (const Graph& graph, std::ofstream& cout) {
      * layer \t squared order parameter \t m1 \t m2 \t m3
      */
     cout << "layer\tsquared_op\tm1\tm2\tm3\n";
-    const std::vector<double> squared_ops = getSquaredOP(graph);
+    const std::vector<double> squared_ops = getSquaredOP(spins, length);
     for (int i = 0; i < squared_ops.size(); ++i) {
         cout << i << "\t" << squared_ops[i] << "\t";
         /*

@@ -15,20 +15,11 @@ struct AdjNode {
     AdjNode(int v, double w) : val(v), weight(w), next(nullptr) {}
 };
 
-class Graph;
-
-// Triangular lattice specific functions
-namespace tri {
-std::vector<double> getSquaredOP(const Graph& graph);
-}
-
 class Graph {
     friend class Annealer;
     friend void testSpin(int, Graph);
-    /* Friend functions for triangular lattice */
-    friend std::vector<double> tri::getSquaredOP(const Graph&);
 
-  private:
+  protected:
     std::vector<AdjNode *> adj_list;          // vector of pointers to AdjNode (sorted by index)
     std::map<int, std::vector<int> > adj_map; // index of node -> vector of neighbors
     std::map<int, double> constant_map;       // index of node -> constant
@@ -42,6 +33,7 @@ class Graph {
   public:
     /* Constructor */
     Graph();
+    Graph(const Graph&); // Copy constructor
 
     /* Manipulator */
     void pushBack(const double&);                         // Push back a constant
@@ -56,16 +48,16 @@ class Graph {
     /* Accessors */
     std::vector<Spin> getSpins() const;                       // Get the spin config vector of the graph
     std::vector<double> getVerticalEnergyProduct(const int&); // Get the vertical energy of the graph (Support for triangular lattice only)
-    double getHamiltonianEnergy();                            // Get the Hamiltonian energy of the graph
-    std::vector<double> getLayerHamiltonianEnergy();          // Get the Hamiltonian energy of each layer
+    double getHamiltonianEnergy() const;                      // Get the Hamiltonian energy of the graph
+    std::vector<double> getLayerHamiltonianEnergy() const;    // Get the Hamiltonian energy of each layer
     double getHamiltonianDifference(const int&);              // Get the Hamiltonian difference given the indices to flip and the spin
     int getLength() const;                                    // Get the length of the graph
     int getHeight() const;                                    // Get the height of the graph
 
     /* Printer */
     void print(std::ofstream&);
-    void printHLayer(std::ofstream&); // Print the Hamiltonian energy of each layer (tsv) (layer hamiltonian h_per_bit)
-    void printConfig(std::ofstream&); // Print the configuration of the graph (tsv) (spin config)
+    void printHLayer(std::ofstream&) const; // Print the Hamiltonian energy of each layer (tsv) (layer hamiltonian h_per_bit)
+    void printConfig(std::ofstream&) const; // Print the configuration of the graph (tsv) (spin config)
 };
 
 #endif

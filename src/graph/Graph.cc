@@ -72,7 +72,7 @@ std::vector<double> Graph::getVerticalEnergyProduct(const int& length) {
 }
 
 // Get the Hamiltonian energy of the graph
-double Graph::getHamiltonianEnergy() {
+double Graph::getHamiltonianEnergy() const {
     double sum = 0.0;
     // std::cout << "adj_list.size() = " << adj_list.size() << std::endl;
     for (int i = 0; i < adj_list.size(); ++i) {
@@ -103,7 +103,7 @@ double Graph::getHamiltonianEnergy() {
 }
 
 // Get the Hamiltonian energy of each layer of the graph
-std::vector<double> Graph::getLayerHamiltonianEnergy() {
+std::vector<double> Graph::getLayerHamiltonianEnergy() const {
     const int height = this->spins.size() / this->length;
     std::vector<double> list_of_energy(height, 0.0);
     double current_sum = 0.0;
@@ -158,6 +158,15 @@ Graph::Graph() {
     this->spins = std::vector<Spin> {};
     this->constant = 0.0;
     this->length = 0;
+}
+
+Graph::Graph(const Graph& g) {
+    this->adj_list = g.adj_list;
+    this->adj_map = g.adj_map;
+    this->constant_map = g.constant_map;
+    this->spins = g.spins;
+    this->constant = g.constant;
+    this->length = g.length;
 }
 
 /* Manipulator */
@@ -302,16 +311,16 @@ void Graph::print(std::ofstream& cout) {
     return;
 }
 
-void Graph::printHLayer(std::ofstream& cout) {
+void Graph::printHLayer(std::ofstream& cout) const {
     cout << "layer\thamiltonian\th_per_layer\n";
-    const std::vector<double> h_per_layer = getLayerHamiltonianEnergy();
+    const std::vector<double> h_per_layer = this->getLayerHamiltonianEnergy();
     for (int i = 0; i < h_per_layer.size(); ++i) {
         cout << i << "\t" << h_per_layer[i] << "\t" << h_per_layer[i] / this->length << std::endl;
     }
     return;
 }
 
-void Graph::printConfig(std::ofstream& cout) {
+void Graph::printConfig(std::ofstream& cout) const {
     const int length = this->getLength();
     cout << "index\tspin\n";
     for (int i = 0; i < length; ++i) {
