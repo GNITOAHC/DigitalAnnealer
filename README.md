@@ -45,25 +45,33 @@ All the samples are in the direstory `sample`. Please `make` then copy `cp ./mai
 > [!NOTE]  
 > Run the following inside `./sample` directory.
 
-1. Run `sh run.sh` will run `./main_exe --h-tri 9 --ini-g 0.2 --func sa`, which use default triangular lattice with length 9 & initialized the gamma to 0.2.
+1. Run `./main_exe --h-tri 9 --func sa`, which use default triangular lattice with length 9 and other default values.
+
+   ```c++
+   // Default values
+   struct Params_SA {
+     int rank = 0;
+     double init_t = 2.0;
+     double final_t = 0.0;
+     int tau = 1000;
+   };
+   ```
 
    ```shell
    $ ./main_exe --h-tri 9 --ini-g 0.2 --func sa
    Hamiltonian energy: 243
    Simulated annealing
    Hamiltonian energy: -81
-   Squared order parameter debug section END:
-   layer 0: 0.000001
    ```
 
-2. `sample2.in` and `sample3.in` is a **QUBO/Ising Model** evaluation transform equivalent. `sample2.in` with `--qubo` will be translated to ising model.
+2. `sample_q.in` and `sample_i.in` is a **QUBO/Ising Model** evaluation transform equivalent. `sample_q.in` with `--qubo` will be translated to ising model.
 
    ```shell
-   $ ./main_exe --file sample2.in --qubo
+   $ ./main_exe --file sample_q.in --func sa --qubo
    Simulated annealing
    Hamiltonian energy: 0
 
-   $ ./main_exe --file sample3.in
+   $ ./main_exe --file sample_i.in --func sa
    Simulated annealing
    Hamiltonian energy: 0
    ```
@@ -76,9 +84,5 @@ All the samples are in the direstory `sample`. Please `make` then copy `cp ./mai
    $ ./main_exe --h-tri 9 --ini-g 0.2 --func sqa --height 32
    Hamiltonian energy: 243
    Simulated quantum annealing
-   Hamiltonian energy: -2412
-   Squared order parameter debug section END:
-   layer 0: 0.000000
-   layer 1: 0.000001
-   ...
+   Hamiltonian energy: -2462
    ```
