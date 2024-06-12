@@ -321,9 +321,9 @@ void Graph::printHLayer(std::ofstream& cout) const {
 }
 
 void Graph::printConfig(std::ofstream& cout) const {
-    const int length = this->getLength();
+    const int size = this->spins.size();
     cout << "index\tspin\n";
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < size; ++i) {
         cout << i << "\t" << spins[i] << std::endl;
     }
     return;
