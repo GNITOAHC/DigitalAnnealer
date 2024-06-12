@@ -29,7 +29,6 @@ void Anlr_SA::printHLayer(std::ofstream& out) const { return this->graph.printHL
 double Anlr_SA::anneal() {
     const double temp0 = this->params.init_t, final_temp = this->params.final_t;
     const int tau = this->params.tau;
-    std::cout << temp0 << " " << final_temp << " " << tau << std::endl;
     for (int i = 0; i <= tau; ++i) {
         const double T = temp0 * (1 - ((double)i / tau)) + final_temp * ((double)i / tau);
         const int length = graph.spins.size();
