@@ -12,8 +12,8 @@ class Annealer {
   public:
     int myrank;
     Annealer(const int);
-    double annealTemp(std::tuple<double, double, double>, Graph&);         // Annealing algorithm { { temp, step, final_temp }, graph }
-    double annealGamma(const std::tuple<double, double, double>&, Graph&); // Annealing algorithm { { gamma, step, final_gamma }, graph }
+
+    virtual double anneal() = 0;
 };
 
 #endif

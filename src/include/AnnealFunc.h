@@ -1,1 +1,1 @@
-enum ANNEAL_FUNC { sa, sqa };
+enum ANNEAL_FUNC { SA, SQA, NIL };
