@@ -17,6 +17,7 @@ Options:
   --tau <tau>                Specify a tau for annealer
   --func <func_string>       Specify a function for annealer, either "sa" or "sqa"
   --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8
+  --ans-count <count>        Specify a number of answers to be returned
   --print-conf               Output the configuration
   --help                     Display this information
 ```
