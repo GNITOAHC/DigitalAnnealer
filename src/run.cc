@@ -61,11 +61,15 @@ int run (int argc, char **argv, const int myrank) {
     std::variant<Anlr_SA, Anlr_SQA> anlr;
     double hamiltonian_energy = DBL_MAX;
 
+    int rank_count = 0;
+    if (args.hasArg("--ans-count")) rank_count = std::get<int>(args.getArg("--ans-count"));
+
+    for (int rank = 0; rank < rank_count; ++rank) {
     switch (strategy) {
         case SA:
             {
                 std::cout << "Simulated annealing" << std::endl;
-                struct Params_SA params = { .rank = myrank };
+                struct Params_SA params = { .rank = rank };
                 if (args.hasArg("--ini-t")) params.init_t = std::get<double>(args.getArg("--ini-t"));
                 if (args.hasArg("--final-t")) params.final_t = std::get<double>(args.getArg("--final-t"));
                 if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
@@ -80,7 +84,7 @@ int run (int argc, char **argv, const int myrank) {
         case SQA:
             {
                 std::cout << "Simulated quantum annealing" << std::endl;
-                struct Params_SQA params = { .rank = myrank };
+                struct Params_SQA params = { .rank = rank };
                 if (args.hasArg("--ini-g")) params.init_g = std::get<double>(args.getArg("--ini-g"));
                 if (args.hasArg("--final-g")) params.final_g = std::get<double>(args.getArg("--final-g"));
                 if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
@@ -115,6 +119,7 @@ int run (int argc, char **argv, const int myrank) {
             case SQA: printTriSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
             default: break;
         }
+    }
     }
 
     return 0;

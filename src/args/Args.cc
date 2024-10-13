@@ -26,6 +26,7 @@ std::vector<ArgFormat> CustomArgs::argsConstruct() const {
         { "--tau", ARG_INT, 1 },          // Specify a tau for annealer
         { "--func", ARG_STRING, 1 },      // Either "sa" for simulated annealing or "sqa" for simulated quantum annealing
         { "--height", ARG_INT, 1 },       // Specify a height for triangular lattice ( When annealing with func sqa ) default 4
+        { "--ans-count", ARG_INT, 1 },    // Specify a number of answers to be returned
         { "--print-conf", ARG_BOOL, 0 },  // Print the configuration
         { "--help", ARG_BOOL, 0, false }, // Display help
     });
