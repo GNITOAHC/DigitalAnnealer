@@ -124,6 +124,12 @@ std::vector<double> Graph::getLayerHamiltonianEnergy() const {
         // Refresh the current_sum if the current node is the last node of the layer
         const int length_square = adj_list.size() / height;
         if ((i + 1) % length_square == 0) {
+            // Calculate the linear terms
+            for (auto const& it: constant_map)
+                current_sum += it.second * (double)spins[it.first];
+            // Calculate the constant term
+            current_sum += constant;
+
             list_of_energy[i / length_square] = current_sum;
             current_sum = 0.0;
             // std::cout << "Current index = " << i << std::endl;
