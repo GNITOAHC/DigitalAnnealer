@@ -5,11 +5,11 @@
 #include <fstream>
 
 struct Params_SQA {
-    int rank = 0;
-    double init_g = 0.2;
-    double final_g = 0.0;
-    int tau = 1000;
-    double gamma = 0.2;
+    int rank        = 0;
+    double init_g   = 0.2;
+    double final_g  = 0.0;
+    int tau         = 1000;
+    double gamma    = 0.2;
     int layer_count = 8;
 };
 
@@ -42,7 +42,9 @@ class Anlr_SQA : public Annealer {
     std::vector<Spin> getSpins() const;
 
     // Getter
-    Grph_SQA getGraph () const { return this->graph; }
+    Grph_SQA getGraph () const {
+        return this->graph;
+    }
     double getHamiltonianEnergy() const;
 
     // SQA functions

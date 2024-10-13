@@ -4,10 +4,10 @@
 #include "../../annealer/Annealer.h"
 
 struct Params_SA {
-    int rank = 0;
-    double init_t = 2.0;
+    int rank       = 0;
+    double init_t  = 2.0;
     double final_t = 0.0;
-    int tau = 1000;
+    int tau        = 1000;
 };
 
 class Anlr_SA : public Annealer {
@@ -36,7 +36,9 @@ class Anlr_SA : public Annealer {
     std::vector<Spin> getSpins() const;
 
     // Getter
-    Grph_SA getGraph () const { return this->graph; }
+    Grph_SA getGraph () const {
+        return this->graph;
+    }
     double getHamiltonianEnergy() const;
 
     // SA functions

@@ -4,9 +4,15 @@
 /* Triangular lattice helper functions */
 
 // Node's current height, current row, current column, lattice's length
-inline int GETRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (i * l) + ((j + 1) % l)); }
-inline int GETBOTTOM (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + j); }
-inline int GETBOTTOMRIGHT (const int& h, const int& i, const int& j, const int& l) { return ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l)); }
+inline int GETRIGHT (const int& h, const int& i, const int& j, const int& l) {
+    return ((h * l * l) + (i * l) + ((j + 1) % l));
+}
+inline int GETBOTTOM (const int& h, const int& i, const int& j, const int& l) {
+    return ((h * l * l) + (((i + 1) % l) * l) + j);
+}
+inline int GETBOTTOMRIGHT (const int& h, const int& i, const int& j, const int& l) {
+    return ((h * l * l) + (((i + 1) % l) * l) + ((j + 1) % l));
+}
 // Node's current height, current row, current column, lattice's length, lattice's height
 inline int GETLAYERUP (const int& h, const int& i, const int& j, const int& l, const int& height) {
     return ((((h + 1) % height) * l * l) + (i * l) + j);

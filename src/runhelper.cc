@@ -1,6 +1,6 @@
+#include "runhelper.h"
 #include "args/Args.h"
 #include "graph/tri/tri.h"
-#include "runhelper.h"
 
 #include <cstdarg>
 #include <cstring>
@@ -8,7 +8,8 @@
 
 // String format
 std::string format (const std::string fmt_str, ...) {
-    int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
+    int final_n,
+        n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
     std::unique_ptr<char[]> formatted;
     va_list ap;
     while (1) {
@@ -24,7 +25,8 @@ std::string format (const std::string fmt_str, ...) {
 }
 
 std::string getfilename (const ANNEAL_FUNC& a, const bool& hlayer, const bool config = false) {
-    std::string filenames[4] = { "%dL%d_H%d_Ti%f_Tf%f_tau%d.tsv", "%dL%d_H%d_Gi%f_Gf%f_tau%d.tsv", "%dtri_%d_%d_Ti%f_Tf%f_tau%d.tsv",
+    std::string filenames[4] = { "%dL%d_H%d_Ti%f_Tf%f_tau%d.tsv", "%dL%d_H%d_Gi%f_Gf%f_tau%d.tsv",
+                                 "%dtri_%d_%d_Ti%f_Tf%f_tau%d.tsv",
                                  "%dtri_%d_%d_Gi%f_Gf%f_tau%d.tsv" };
     switch (a) {
         case ANNEAL_FUNC::SA:

@@ -1,5 +1,5 @@
-#include "../../include/Helper.h"
 #include "tri.h"
+#include "../../include/Helper.h"
 #include <complex>
 
 namespace tri {
@@ -19,8 +19,8 @@ std::vector<double> getSquaredOP (const std::vector<Spin>& spins, const int leng
     auto get_sub_lattice = [&] (const int& index) { return ((index / length) + index) % 3; };
 
     const int each_color_count_per_layer_int = (length * length) / 3;
-    const double each_color_count_per_layer = (double)each_color_count_per_layer_int;
-    const int total_count = spins.size();
+    const double each_color_count_per_layer  = (double)each_color_count_per_layer_int;
+    const int total_count                    = spins.size();
 
     for (int i = 0; i < total_count; ++i) {
         const int layer = i / length;
@@ -42,7 +42,7 @@ std::vector<double> getSquaredOP (const std::vector<Spin>& spins, const int leng
     //     std::cout << std::endl;
     // }
 
-    const std::complex<double> math_e_pow = std::pow(math_e, image_pi);
+    const std::complex<double> math_e_pow     = std::pow(math_e, image_pi);
     const std::complex<double> math_e_pow_inv = std::pow(math_e, -image_pi);
 
     std::vector<double> layer_squared_op(height, 0.0);
@@ -54,16 +54,19 @@ std::vector<double> getSquaredOP (const std::vector<Spin>& spins, const int leng
         const std::complex<double> m_red(m_color_params[i][2] / each_color_count_per_layer, 0.0);
 
         // Calculate the order parameter
-        const std::complex<double> order_parameter = (m_blue + m_black * math_e_pow + m_red * math_e_pow_inv) / sqrt(3.0);
+        const std::complex<double> order_parameter =
+            (m_blue + m_black * math_e_pow + m_red * math_e_pow_inv) / sqrt(3.0);
 
         // Calculate the order parameter length squared
-        const double squared_op = std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
+        const double squared_op =
+            std::pow(order_parameter.real(), 2.0) + std::pow(order_parameter.imag(), 2.0);
 
         layer_squared_op[i] = squared_op;
     }
 
     // for (int i = 0; i < layer_order_parameter_length_squared.size(); ++i) {
-    //     std::cout << "Layer " << i << ": " << layer_order_parameter_length_squared[i] << std::endl;
+    //     std::cout << "Layer " << i << ": " << layer_order_parameter_length_squared[i] <<
+    //     std::endl;
     // }
     return layer_squared_op;
     // return std::vector<double>();
@@ -78,14 +81,16 @@ Graph makeGraph (const int& length) {
     // const int length2 = length * length;
     // const double gamma = 0.2;
     // const double strength_between_layer = gamma == 0.0 ? 0.0 : (-0.5) * loge(tanh(gamma));
-    int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM, GETBOTTOMRIGHT };
+    int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM,
+                                                                             GETBOTTOMRIGHT };
     // for (int h = 0; h < height; ++h) {
     for (int i = 0; i < length; ++i) {
         for (int j = 0; j < length; ++j) {
             const int index = i * length + j;
             for (int c = 0; c < 3; ++c)
                 graph.pushBack(index, (*macro_array[c])(0, i, j, length), 1.0);
-            // if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height), strength_between_layer);
+            // if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height),
+            // strength_between_layer);
         }
     }
     // }
@@ -131,7 +136,8 @@ void printTriConf (const std::vector<Spin>& spins, const int& length, std::ofstr
         /*
          * Print the color parameters here for each layer (m1, m2. m3)
          */
-        cout << m_color_params[i][0] << "\t" << m_color_params[i][1] << "\t" << m_color_params[i][2];
+        cout << m_color_params[i][0] << "\t" << m_color_params[i][1] << "\t"
+             << m_color_params[i][2];
         cout << std::endl;
     }
     return;
@@ -146,14 +152,15 @@ void printTriConf (const std::vector<Spin>& spins, const int& length, std::ofstr
 //     Graph graph;
 //     const int length2 = length * length;
 //     const double strength_between_layer = gamma == 0.0 ? 0.0 : (-0.5) * loge(tanh(gamma));
-//     int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM, GETBOTTOMRIGHT };
-//     for (int h = 0; h < height; ++h) {
+//     int (*macro_array[])(const int&, const int&, const int&, const int&) = { GETRIGHT, GETBOTTOM,
+//     GETBOTTOMRIGHT }; for (int h = 0; h < height; ++h) {
 //         for (int i = 0; i < length; ++i) {
 //             for (int j = 0; j < length; ++j) {
 //                 const int index = h * length2 + i * length + j;
 //                 for (int c = 0; c < 3; ++c)
 //                     graph.pushBack(index, (*macro_array[c])(h, i, j, length), 1.0);
-//                 if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height), strength_between_layer);
+//                 if (height > 1) graph.pushBack(index, GETLAYERUP(h, i, j, length, height),
+//                 strength_between_layer);
 //             }
 //         }
 //     }

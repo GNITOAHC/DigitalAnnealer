@@ -1,7 +1,7 @@
+#include "run.h"
 #include "./args/Args.h"
 #include "./graph/tri/tri.h"
 #include "./runhelper.h"
-#include "run.h"
 
 #include <cfloat>
 #include <cstring>
@@ -29,7 +29,8 @@ int run (int argc, char **argv, const int myrank) {
     ANNEAL_FUNC strategy = args.getStrategy();
 
     // Check function to run & set tau
-    const std::string func = args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
+    const std::string func =
+        args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
 
     std::fstream file;
     Graph graph;
@@ -40,14 +41,15 @@ int run (int argc, char **argv, const int myrank) {
          */
         const int tri_width = std::get<int>(args.getArg("--h-tri"));
         // graph = makeGraph(v[0], 1, gamma); // makeGraph(length, height, gamma)
-        graph = tri::makeGraph(tri_width); // makeGraph(length)
+        graph               = tri::makeGraph(tri_width); // makeGraph(length)
         graph.lockLength(tri_width * tri_width);
     } else {
         /*
          * Build graph for general purpose
          */
         file.open(std::get<std::string>(args.getArg("--file")), std::ios::in);
-        graph = args.hasArg("--qubo") ? readInputFromQubo(file) : readInput(file); // Convert to Ising if it's QUBO
+        graph = args.hasArg("--qubo") ? readInputFromQubo(file)
+                                      : readInput(file); // Convert to Ising if it's QUBO
         if (file.is_open()) file.close();
 
         // Lock the length of the graph after reading the input
@@ -65,61 +67,67 @@ int run (int argc, char **argv, const int myrank) {
     if (args.hasArg("--ans-count")) rank_count = std::get<int>(args.getArg("--ans-count"));
 
     for (int rank = 0; rank < rank_count; ++rank) {
-    switch (strategy) {
-        case SA:
-            {
-                std::cout << "Simulated annealing" << std::endl;
-                struct Params_SA params = { .rank = rank };
-                if (args.hasArg("--ini-t")) params.init_t = std::get<double>(args.getArg("--ini-t"));
-                if (args.hasArg("--final-t")) params.final_t = std::get<double>(args.getArg("--final-t"));
-                if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
-                Anlr_SA sa(graph, params);
-                hamiltonian_energy = sa.anneal();
-
-                anlr = sa;
-                prms = params;
-
-                break;
-            }
-        case SQA:
-            {
-                std::cout << "Simulated quantum annealing" << std::endl;
-                struct Params_SQA params = { .rank = rank };
-                if (args.hasArg("--ini-g")) params.init_g = std::get<double>(args.getArg("--ini-g"));
-                if (args.hasArg("--final-g")) params.final_g = std::get<double>(args.getArg("--final-g"));
-                if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
-                if (args.hasArg("--height")) params.layer_count = std::get<int>(args.getArg("--height"));
-                if (args.hasArg("--gamma")) params.gamma = std::get<double>(args.getArg("--gamma"));
-                Anlr_SQA sqa(graph, params);
-                hamiltonian_energy = sqa.anneal();
-
-                anlr = sqa;
-                prms = params;
-
-                break;
-            }
-        default: break;
-    }
-
-    std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
-
-    if (!args.hasArg("--print-conf")) return 0; // Program end if --print-conf is not set
-
-    switch (strategy) {
-        case SA: printSA(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
-        case SQA: printSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
-        default: break;
-    }
-
-    // Print config to file for triangular lattice
-    if (args.hasArg("--h-tri")) {
-        std::string filename;
         switch (strategy) {
-            case SA: printTriSA(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
-            case SQA: printTriSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
+            case SA:
+                {
+                    std::cout << "Simulated annealing" << std::endl;
+                    struct Params_SA params = { .rank = rank };
+                    if (args.hasArg("--ini-t"))
+                        params.init_t = std::get<double>(args.getArg("--ini-t"));
+                    if (args.hasArg("--final-t"))
+                        params.final_t = std::get<double>(args.getArg("--final-t"));
+                    if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
+                    Anlr_SA sa(graph, params);
+                    hamiltonian_energy = sa.anneal();
+
+                    anlr = sa;
+                    prms = params;
+
+                    break;
+                }
+            case SQA:
+                {
+                    std::cout << "Simulated quantum annealing" << std::endl;
+                    struct Params_SQA params = { .rank = rank };
+                    if (args.hasArg("--ini-g"))
+                        params.init_g = std::get<double>(args.getArg("--ini-g"));
+                    if (args.hasArg("--final-g"))
+                        params.final_g = std::get<double>(args.getArg("--final-g"));
+                    if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
+                    if (args.hasArg("--height"))
+                        params.layer_count = std::get<int>(args.getArg("--height"));
+                    if (args.hasArg("--gamma"))
+                        params.gamma = std::get<double>(args.getArg("--gamma"));
+                    Anlr_SQA sqa(graph, params);
+                    hamiltonian_energy = sqa.anneal();
+
+                    anlr = sqa;
+                    prms = params;
+
+                    break;
+                }
             default: break;
         }
-    }
+
+        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+
+        if (!args.hasArg("--print-conf")) return 0; // Program end if --print-conf is not set
+
+        switch (strategy) {
+            case SA: printSA(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
+            case SQA: printSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
+            default: break;
+        }
+
+        // Print config to file for triangular lattice
+        if (args.hasArg("--h-tri")) {
+            std::string filename;
+            switch (strategy) {
+                case SA: printTriSA(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
+                case SQA: printTriSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
+                default: break;
+            }
+        }
     }
 
     return 0;

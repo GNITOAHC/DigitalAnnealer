@@ -1,16 +1,18 @@
-#include "../include/Helper.h"
 #include "Graph.h"
+#include "../include/Helper.h"
 
 #include <cmath>
 
 #define debug(n) std::cerr << n << std::endl;
 
 const double E = std::exp(1.0);
-inline double loge (double x) { return std::log(x) / std::log(E); }
+inline double loge (double x) {
+    return std::log(x) / std::log(E);
+}
 
 /* Private functions */
 
-void Graph::privatePushBack(const int& index, AdjNode *node) {
+void Graph::privatePushBack (const int& index, AdjNode *node) {
     /* Insert into adj_list */
     if (index >= adj_list.size()) { adj_list.resize(index + 1, nullptr); }
     if (adj_list[index] == nullptr) {
@@ -33,7 +35,7 @@ void Graph::privatePushBack(const int& index, AdjNode *node) {
     if (index >= spins.size()) { spins.resize(index + 1, UP); }
 }
 
-void Graph::privatePushBack(const int& index, const double& constant) {
+void Graph::privatePushBack (const int& index, const double& constant) {
     /* Insert into constant_map */
     std::map<int, double>::iterator it = constant_map.find(index);
     if (it == constant_map.end()) {
@@ -49,16 +51,18 @@ void Graph::privatePushBack(const int& index, const double& constant) {
 /* Accessors */
 
 // Get the spin config vector of the graph
-std::vector<Spin> Graph::getSpins() const { return this->spins; }
+std::vector<Spin> Graph::getSpins () const {
+    return this->spins;
+}
 
 // Get the vertical energy of the graph
-std::vector<double> Graph::getVerticalEnergyProduct(const int& length) {
+std::vector<double> Graph::getVerticalEnergyProduct (const int& length) {
     std::vector<double> list_of_energy(length, 0.0);
 
     for (int i = 0; i < length; ++i) {
         const int self_idx = adj_list[i]->val;
-        AdjNode *tmp = adj_list[i];
-        int current_layer = 0;
+        AdjNode *tmp       = adj_list[i];
+        int current_layer  = 0;
 
         // \sum_{i=1}^L { \sum_{l=1}^{L_tau} { s_i^l * s_i^{l+1} } }
         while (tmp->val != self_idx) {
@@ -72,7 +76,7 @@ std::vector<double> Graph::getVerticalEnergyProduct(const int& length) {
 }
 
 // Get the Hamiltonian energy of the graph
-double Graph::getHamiltonianEnergy() const {
+double Graph::getHamiltonianEnergy () const {
     double sum = 0.0;
     // std::cout << "adj_list.size() = " << adj_list.size() << std::endl;
     for (int i = 0; i < adj_list.size(); ++i) {
@@ -103,7 +107,7 @@ double Graph::getHamiltonianEnergy() const {
 }
 
 // Get the Hamiltonian energy of each layer of the graph
-std::vector<double> Graph::getLayerHamiltonianEnergy() const {
+std::vector<double> Graph::getLayerHamiltonianEnergy () const {
     const int height = this->spins.size() / this->length;
     std::vector<double> list_of_energy(height, 0.0);
     double current_sum = 0.0;
@@ -125,13 +129,13 @@ std::vector<double> Graph::getLayerHamiltonianEnergy() const {
         const int length_square = adj_list.size() / height;
         if ((i + 1) % length_square == 0) {
             // Calculate the linear terms
-            for (auto const& it: constant_map)
+            for (auto const& it : constant_map)
                 current_sum += it.second * (double)spins[it.first];
             // Calculate the constant term
             current_sum += constant;
 
             list_of_energy[i / length_square] = current_sum;
-            current_sum = 0.0;
+            current_sum                       = 0.0;
             // std::cout << "Current index = " << i << std::endl;
         }
     }
@@ -140,45 +144,51 @@ std::vector<double> Graph::getLayerHamiltonianEnergy() const {
 }
 
 // Get the Hamiltonian difference given the indices to flip and the spin
-double Graph::getHamiltonianDifference(const int& index) {
+double Graph::getHamiltonianDifference (const int& index) {
     double sum_to_modify = 0.0;
-    const double spin = (double)spins[index];
-    AdjNode *tmp = adj_list[index];
+    const double spin    = (double)spins[index];
+    AdjNode *tmp         = adj_list[index];
     while (tmp != nullptr) {
         sum_to_modify += tmp->weight * spin * (double)spins[tmp->val];
         tmp = tmp->next;
     }
     // std::cout << -2.0 * sum_to_modify << std::endl;
-    if (constant_map.find(index) != constant_map.end()) { sum_to_modify += constant_map[index] * (double)spins[index]; }
+    if (constant_map.find(index) != constant_map.end()) {
+        sum_to_modify += constant_map[index] * (double)spins[index];
+    }
     return -2.0 * sum_to_modify;
 }
 
-int Graph::getLength() const { return this->length; }
-int Graph::getHeight() const { return this->spins.size() / this->length; }
-
-/* Constructor */
-Graph::Graph() {
-    this->adj_list = std::vector<AdjNode *> {};
-    this->adj_map = std::map<int, std::vector<int> > {};
-    this->constant_map = std::map<int, double> {};
-    this->spins = std::vector<Spin> {};
-    this->constant = 0.0;
-    this->length = 0;
+int Graph::getLength () const {
+    return this->length;
+}
+int Graph::getHeight () const {
+    return this->spins.size() / this->length;
 }
 
-Graph::Graph(const Graph& g) {
-    this->adj_list = g.adj_list;
-    this->adj_map = g.adj_map;
+/* Constructor */
+Graph::Graph () {
+    this->adj_list     = std::vector<AdjNode *> {};
+    this->adj_map      = std::map<int, std::vector<int> > {};
+    this->constant_map = std::map<int, double> {};
+    this->spins        = std::vector<Spin> {};
+    this->constant     = 0.0;
+    this->length       = 0;
+}
+
+Graph::Graph (const Graph& g) {
+    this->adj_list     = g.adj_list;
+    this->adj_map      = g.adj_map;
     this->constant_map = g.constant_map;
-    this->spins = g.spins;
-    this->constant = g.constant;
-    this->length = g.length;
+    this->spins        = g.spins;
+    this->constant     = g.constant;
+    this->length       = g.length;
 }
 
 /* Manipulator */
 
 // Push back an edge
-void Graph::pushBack(const int& po1, const int& po2, const double& co) {
+void Graph::pushBack (const int& po1, const int& po2, const double& co) {
     AdjNode *node1 = new AdjNode(po2, co);
     privatePushBack(po1, node1);
     if (po1 == po2) return; // self loop
@@ -187,27 +197,27 @@ void Graph::pushBack(const int& po1, const int& po2, const double& co) {
     return;
 };
 
-void Graph::pushBack(const int& po, const double& co) {
+void Graph::pushBack (const int& po, const double& co) {
     privatePushBack(po, co);
     return;
 }
 
-void Graph::pushBack(const double& co) {
+void Graph::pushBack (const double& co) {
     this->constant += co;
     return;
 }
 
-void Graph::growLayer(const int& grow_count, const double& gamma) {
-    const int length = this->getLength();
-    const int height = this->spins.size() / length;
+void Graph::growLayer (const int& grow_count, const double& gamma) {
+    const int length          = this->getLength();
+    const int height          = this->spins.size() / length;
     const int origin_constant = this->constant / height;
-    const double g = (-0.5) * loge(tanh(gamma));
+    const double g            = (-0.5) * loge(tanh(gamma));
     for (int i = 0; i < grow_count; ++i) {
         // Duplicate the current layer to the new layer
         for (int j = 0; j < length; ++j) {
             const int index = (i + 1) * length + j; // New layer's index
             // Add edge between the new layer
-            AdjNode *tmp = adj_list[j];
+            AdjNode *tmp    = adj_list[j];
             while (tmp != nullptr) {
                 const int corr_node = tmp->val + (length * (i + 1));
                 // Prevent from adding edge to the next layer
@@ -220,21 +230,24 @@ void Graph::growLayer(const int& grow_count, const double& gamma) {
                 tmp = tmp->next;
             }
             // Add constant map of the new layer
-            if (constant_map.find(j) != constant_map.end()) { this->pushBack(index, constant_map[j]); }
+            if (constant_map.find(j) != constant_map.end()) {
+                this->pushBack(index, constant_map[j]);
+            }
         }
         // Add constant of the new layer
         this->constant += origin_constant;
         // Add edge between the new layer & the previous layer
         for (int j = 0; j < length; ++j) {
-            const int index = i * length + j; // Previous layer's index
+            const int index          = i * length + j; // Previous layer's index
             const int next_layer_idx = (index + length) % (length * (grow_count + 1));
-            // std::cout << "index = " << index << " next_layer_idx = " << next_layer_idx << std::endl;
+            // std::cout << "index = " << index << " next_layer_idx = " << next_layer_idx <<
+            // std::endl;
             this->pushBack(index, next_layer_idx, g);
         }
     }
     // Link back to the first layer
     for (int j = 0; j < length; ++j) {
-        const int index = grow_count * length + j;
+        const int index          = grow_count * length + j;
         const int next_layer_idx = j;
         // std::cout << "index = " << index << " next_layer_idx = " << next_layer_idx << std::endl;
         this->pushBack(index, next_layer_idx, g);
@@ -243,16 +256,18 @@ void Graph::growLayer(const int& grow_count, const double& gamma) {
 }
 
 // Flip the spin of the given index
-void Graph::flipSpin(const int& index) { spins[index] = (spins[index] == UP) ? DOWN : UP; }
+void Graph::flipSpin (const int& index) {
+    spins[index] = (spins[index] == UP) ? DOWN : UP;
+}
 
 // Update the gamma of the graph
-void Graph::updateGamma(const double& gamma) {
+void Graph::updateGamma (const double& gamma) {
     char gamma_update_flag = 0X00; // check if gamma is updated for both up and down
-    const int length = this->getLength();
-    const int height = this->spins.size() / length;
+    const int length       = this->getLength();
+    const int height       = this->spins.size() / length;
     // std::cout << "length = " << length << " height = " << height << std::endl;
     for (int i = 0; i < adj_list.size(); ++i) {
-        AdjNode *tmp = adj_list[i];
+        AdjNode *tmp             = adj_list[i];
         // const int next_layer_idx = get_layer_up(i, length, height);
         // const int prev_layer_idx = get_layer_down(i, length, height);
         const int next_layer_idx = (i + length) % (length * height);
@@ -275,12 +290,16 @@ void Graph::updateGamma(const double& gamma) {
     return;
 }
 
-void Graph::lockLength() { this->length = this->spins.size(); }
-void Graph::lockLength(const int& ll) { this->length = ll; }
+void Graph::lockLength () {
+    this->length = this->spins.size();
+}
+void Graph::lockLength (const int& ll) {
+    this->length = ll;
+}
 
 /* Printer */
 
-void Graph::print(std::ofstream& cout) {
+void Graph::print (std::ofstream& cout) {
     cout << "Adjacency List:" << std::endl;
     for (int i = 0; i < adj_list.size(); i++) {
         AdjNode *tmp = adj_list[i];
@@ -293,7 +312,8 @@ void Graph::print(std::ofstream& cout) {
     }
 
     cout << std::endl << "Adjacency Map:" << std::endl;
-    for (std::map<int, std::vector<int> >::iterator it = adj_map.begin(); it != adj_map.end(); it++) {
+    for (std::map<int, std::vector<int> >::iterator it = adj_map.begin(); it != adj_map.end();
+         it++) {
         cout << it->first << ": ";
         for (int i = 0; i < it->second.size(); i++) {
             cout << it->second[i] << " ";
@@ -302,7 +322,8 @@ void Graph::print(std::ofstream& cout) {
     }
 
     cout << std::endl << "Constant Map: " << std::endl;
-    for (std::map<int, double>::iterator it = constant_map.begin(); it != constant_map.end(); it++) {
+    for (std::map<int, double>::iterator it = constant_map.begin(); it != constant_map.end();
+         it++) {
         cout << it->first << ": " << it->second << std::endl;
     }
 
@@ -317,7 +338,7 @@ void Graph::print(std::ofstream& cout) {
     return;
 }
 
-void Graph::printHLayer(std::ofstream& cout) const {
+void Graph::printHLayer (std::ofstream& cout) const {
     cout << "layer\thamiltonian\th_per_layer\n";
     const std::vector<double> h_per_layer = this->getLayerHamiltonianEnergy();
     for (int i = 0; i < h_per_layer.size(); ++i) {
@@ -326,7 +347,7 @@ void Graph::printHLayer(std::ofstream& cout) const {
     return;
 }
 
-void Graph::printConfig(std::ofstream& cout) const {
+void Graph::printConfig (std::ofstream& cout) const {
     const int size = this->spins.size();
     cout << "index\tspin\n";
     for (int i = 0; i < size; ++i) {
