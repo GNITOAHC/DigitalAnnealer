@@ -169,6 +169,7 @@ Graph readInput (std::fstream& source) {
     std::string line;
     std::vector<double> v;
     while (std::getline(source, line)) {
+        if (line[0] == '#') continue; // Skip comment line
         v.clear();
         std::stringstream ss(line);
 
