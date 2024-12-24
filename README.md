@@ -19,6 +19,7 @@ Options:
   --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8
   --ans-count <count>        Specify a number of answers to be returned
   --print-conf               Output the configuration
+  --print-progress           Print the annealing progress (i.e. Temperature and energy of every step)
   --help                     Display this information
 ```
 

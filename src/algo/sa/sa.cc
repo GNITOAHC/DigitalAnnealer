@@ -59,6 +59,8 @@ double Anlr_SA::anneal () {
 
             // Flip the spin with probability PI_accept
             this->randomExec(PI_accept, [&] () { graph.flipSpin(j); });
+
+            if (print_progress) std::cout << T << " " << graph.getHamiltonianEnergy() << std::endl;
         }
 
 #ifdef USE_MPI

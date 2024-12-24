@@ -47,6 +47,7 @@ class Anlr_SA : public Annealer {
     // Printer
     void printHLayer(std::ofstream&) const;
     void printConfig(std::ofstream&) const;
+    bool print_progress = false;
 };
 
 #endif
