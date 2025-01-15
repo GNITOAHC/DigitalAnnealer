@@ -35,6 +35,8 @@ class Graph {
     Graph();
     Graph(const Graph&); // Copy constructor
 
+    std::map<int, std::vector<int> > getAdjMap() const;
+
     /* Manipulator */
     void pushBack(const double&);                         // Push back a constant
     void pushBack(const int&, const int&, const double&); // Push back an edge

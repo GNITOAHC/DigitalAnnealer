@@ -1,13 +1,14 @@
-#include "runhelper.h"
 #include "args/Args.h"
 #include "graph/tri/tri.h"
+#include "runhelper.h"
 
 #include <cstdarg>
 #include <cstring>
+#include <iomanip>
 #include <memory>
 
 // String format
-std::string format (const std::string fmt_str, ...) {
+std::string custom_format (const std::string fmt_str, ...) {
     int final_n,
         n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
     std::unique_ptr<char[]> formatted;
@@ -51,17 +52,40 @@ std::string getTriName (const ANNEAL_FUNC& a) {
     }
 }
 
+void printSAV2 (const Anlr_SA& sa, const Params_SA& p) {
+    const int l = sa.getLength(), h = sa.getHeight(), t = p.tau, r = p.rank;
+    const double it = p.init_t, ft = p.final_t;
+    std::ofstream outfile;
+
+    // Count total spins
+    std::map<int, std::vector<int> > map = sa.getGraph().getAdjMap();
+    const int total_spins                = map.size();
+
+    std::string filename =
+        custom_format("conf_N%d_T%f_tau%d_%04d.dat", total_spins, p.init_t, p.tau, r);
+    // std::string filename = custom_format(getfilename(ANNEAL_FUNC::SA, false, true), r, l, h, it,
+    // ft, t);
+
+    outfile.open(filename, std::ios::out);
+    outfile << std::setprecision(10) << sa.getHamiltonianEnergy() << std::endl;
+
+    for (int i = 0; i < sa.getLength(); ++i) {
+        if (map.count(i) == 0) continue;
+        outfile << i << " " << sa.getSpins()[i] << std::endl;
+    }
+}
+
 void printSA (const Anlr_SA& sa, const Params_SA& p) {
     const int l = sa.getLength(), h = sa.getHeight(), t = p.tau, r = p.rank;
     const double it = p.init_t, ft = p.final_t;
     std::ofstream outfile;
     // Print HLayer
-    std::string filename = format(getfilename(ANNEAL_FUNC::SA, true), r, l, h, it, ft, t);
+    std::string filename = custom_format(getfilename(ANNEAL_FUNC::SA, true), r, l, h, it, ft, t);
     outfile.open(filename, std::ios::out);
     sa.printHLayer(outfile);
     outfile.close();
     // Print Config
-    filename = format(getfilename(ANNEAL_FUNC::SA, false, true), r, l, h, it, ft, t);
+    filename = custom_format(getfilename(ANNEAL_FUNC::SA, false, true), r, l, h, it, ft, t);
     outfile.open(filename, std::ios::out);
     sa.printConfig(outfile);
     outfile.close();
@@ -73,7 +97,7 @@ void printTriSA (const Anlr_SA& sa, const Params_SA& p) {
     const double it = p.init_t, ft = p.final_t;
     std::ofstream outfile;
 
-    std::string filename = format(getTriName(ANNEAL_FUNC::SA), r, l, h, it, ft, t);
+    std::string filename = custom_format(getTriName(ANNEAL_FUNC::SA), r, l, h, it, ft, t);
     outfile.open(filename, std::ios::out);
     tri::printTriConf(sa.getSpins(), sa.getLength(), outfile);
     outfile.close();
@@ -84,12 +108,12 @@ void printSQA (const Anlr_SQA& sqa, const Params_SQA& p) {
     const double ig = p.init_g, fg = p.final_g;
     std::ofstream outfile;
     // Print HLayer
-    std::string filename = format(getfilename(ANNEAL_FUNC::SQA, true), r, l, h, ig, fg, t);
+    std::string filename = custom_format(getfilename(ANNEAL_FUNC::SQA, true), r, l, h, ig, fg, t);
     outfile.open(filename, std::ios::out);
     sqa.printHLayer(outfile);
     outfile.close();
     // Print Config
-    filename = format(getfilename(ANNEAL_FUNC::SQA, false, true), r, l, h, ig, fg, t);
+    filename = custom_format(getfilename(ANNEAL_FUNC::SQA, false, true), r, l, h, ig, fg, t);
     outfile.open(filename, std::ios::out);
     sqa.printConfig(outfile);
     outfile.close();
@@ -101,7 +125,7 @@ void printTriSQA (const Anlr_SQA& sqa, const Params_SQA& p) {
     const double ig = p.init_g, fg = p.final_g;
     std::ofstream outfile;
 
-    std::string filename = format(getTriName(ANNEAL_FUNC::SQA), r, l, h, ig, fg, t);
+    std::string filename = custom_format(getTriName(ANNEAL_FUNC::SQA), r, l, h, ig, fg, t);
     outfile.open(filename, std::ios::out);
     tri::printTriConf(sqa.getSpins(), sqa.getLength(), outfile);
     outfile.close();

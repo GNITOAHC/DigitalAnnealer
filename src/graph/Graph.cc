@@ -1,5 +1,5 @@
-#include "Graph.h"
 #include "../include/Helper.h"
+#include "Graph.h"
 
 #include <cmath>
 
@@ -8,6 +8,10 @@
 const double E = std::exp(1.0);
 inline double loge (double x) {
     return std::log(x) / std::log(E);
+}
+
+std::map<int, std::vector<int> > Graph::getAdjMap () const {
+    return this->adj_map;
 }
 
 /* Private functions */
@@ -348,6 +352,39 @@ void Graph::printHLayer (std::ofstream& cout) const {
 }
 
 void Graph::printConfig (std::ofstream& cout) const {
+    cout << "index\tadj_list[i]->val\tadj_list[i]->weight\n";
+
+    double sum = 0.0;
+    // std::cout << "init sum = " << sum << std::endl;
+    for (int i = 0; i < this->adj_list.size(); ++i) {
+        break;
+        AdjNode *tmp = this->adj_list[i];
+        if (tmp == nullptr) continue;
+        const double spin = (double)spins[i]; // Get spin of current node
+
+        while (tmp != nullptr) {
+            if (tmp->val > i) {
+                tmp = tmp->next;
+                continue;
+            }
+            // std::cout << "i = " << i << " tmp->val = " << tmp->val << std::endl;
+            // std::cout << "tmp->val = " << (double)spins[tmp->val] << std::endl;
+            // std::cout << "sum: " << sum << std::endl;
+
+            // cout << i << "\t" << tmp->val << "\t" << tmp->weight << std::endl;
+
+            sum += tmp->weight * spin * (double)spins[tmp->val];
+            // std::cout << sum << " == " << tmp->weight << " * " << spin << " * " <<
+            // (double)spins[tmp->val] << std::endl;
+            std::cout << sum << "\t" << tmp->weight << "\t" << spin << "(" << i << ")\t"
+                      << (double)spins[tmp->val] << "(" << tmp->val << ")\t"
+                      << tmp->weight * spin * (double)spins[tmp->val] << std::endl;
+            tmp = tmp->next;
+        }
+        // cout << i << "\t" << this->adj_list[i]->val << "\t" << this->adj_list[i]->weight <<
+        // std::endl;
+    }
+    // cout << "sum == " << sum << std::endl;
     const int size = this->spins.size();
     cout << "index\tspin\n";
     for (int i = 0; i < size; ++i) {

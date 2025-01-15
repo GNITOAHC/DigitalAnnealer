@@ -12,6 +12,7 @@ std::string format(const std::string fmt_str, ...);
  * lattice for Simulated Quantum Annealing
  */
 
+void printSAV2(const Anlr_SA&, const Params_SA&);
 void printSA(const Anlr_SA&, const Params_SA&);
 void printTriSA(const Anlr_SA&, const Params_SA&);
 
