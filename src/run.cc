@@ -1,10 +1,9 @@
-#include "run.h"
 #include "./args/Args.h"
 #include "./graph/tri/tri.h"
 #include "./runhelper.h"
+#include "run.h"
 
 #include <cfloat>
-#include <cstring>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -28,9 +27,7 @@ int run (int argc, char **argv, const int myrank) {
     CustomArgs args(argc, argv);
     ANNEAL_FUNC strategy = args.getStrategy();
 
-    // Check function to run & set tau
-    const std::string func =
-        args.hasArg("--func") ? std::get<std::string>(args.getArg("--func")) : "sa";
+    if (strategy == NIL) strategy = SA; // Default strategy is SA
 
     std::fstream file;
     Graph graph;
@@ -58,19 +55,23 @@ int run (int argc, char **argv, const int myrank) {
 
     std::cout << std::setprecision(10); // Set precision to 10 digits
     std::cout << "Hamiltonian energy: " << graph.getHamiltonianEnergy() << std::endl;
+    switch (strategy) {
+        case SA: std::cout << "Simulated Annealing" << std::endl; break;
+        case SQA: std::cout << "Simulated Quantum Annealing" << std::endl; break;
+        default: break;
+    }
 
     std::variant<Params_SA, Params_SQA> prms;
     std::variant<Anlr_SA, Anlr_SQA> anlr;
     double hamiltonian_energy = DBL_MAX;
 
-    int rank_count = 0;
+    int rank_count = 1;
     if (args.hasArg("--ans-count")) rank_count = std::get<int>(args.getArg("--ans-count"));
 
     for (int rank = 0; rank < rank_count; ++rank) {
         switch (strategy) {
             case SA:
                 {
-                    std::cout << "Simulated annealing" << std::endl;
                     struct Params_SA params = { .rank = rank };
                     if (args.hasArg("--ini-t"))
                         params.init_t = std::get<double>(args.getArg("--ini-t"));
@@ -78,6 +79,9 @@ int run (int argc, char **argv, const int myrank) {
                         params.final_t = std::get<double>(args.getArg("--final-t"));
                     if (args.hasArg("--tau")) params.tau = std::get<int>(args.getArg("--tau"));
                     Anlr_SA sa(graph, params);
+
+                    if (args.hasArg("--print-progress")) sa.print_progress = true;
+
                     hamiltonian_energy = sa.anneal();
 
                     anlr = sa;
@@ -87,7 +91,6 @@ int run (int argc, char **argv, const int myrank) {
                 }
             case SQA:
                 {
-                    std::cout << "Simulated quantum annealing" << std::endl;
                     struct Params_SQA params = { .rank = rank };
                     if (args.hasArg("--ini-g"))
                         params.init_g = std::get<double>(args.getArg("--ini-g"));
@@ -109,12 +112,12 @@ int run (int argc, char **argv, const int myrank) {
             default: break;
         }
 
-        std::cout << "Hamiltonian energy: " << hamiltonian_energy << std::endl;
+        std::cout << hamiltonian_energy << std::endl;
 
-        if (!args.hasArg("--print-conf")) return 0; // Program end if --print-conf is not set
+        if (!args.hasArg("--print-conf")) continue; // Program end if --print-conf is not set
 
         switch (strategy) {
-            case SA: printSA(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
+            case SA: printSAV2(std::get<Anlr_SA>(anlr), std::get<Params_SA>(prms)); break;
             case SQA: printSQA(std::get<Anlr_SQA>(anlr), std::get<Params_SQA>(prms)); break;
             default: break;
         }

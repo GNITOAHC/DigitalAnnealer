@@ -17,7 +17,7 @@ Options:
   --tau <tau>                Specify a tau for annealer
   --func <func_string>       Specify a function for annealer, either "sa" or "sqa"
   --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8
-  --ans-count <count>        Specify a number of answers to be returned
+  --print-progress           Print the annealing progress
   --print-conf               Output the configuration
   --help                     Display this information
 ```
@@ -39,6 +39,16 @@ e.x. $1 x_1 x_2 + 1 x_1 + 1 x_2 + 1$
 1
 ```
 
+## Output file format via print-conf
+
+```
+<energy>
+<spin_0> <1 or -1>
+<spin_1> <1 or -1>
+...
+<spin_n> <1 or -1>
+```
+
 ## Samples
 
 All the samples are in the direstory `sample`. Please `make` then copy `cp ./main_exe ./sample/main_exe` the executable to the `sample` directory.
@@ -48,42 +58,42 @@ All the samples are in the direstory `sample`. Please `make` then copy `cp ./mai
 
 1. Run `./main_exe --h-tri 9 --func sa`, which use default triangular lattice with length 9 and other default values.
 
-   ```c++
-   // Default values
-   struct Params_SA {
-     int rank = 0;
-     double init_t = 2.0;
-     double final_t = 0.0;
-     int tau = 1000;
-   };
-   ```
+    ```c++
+    // Default values
+    struct Params_SA {
+      int rank = 0;
+      double init_t = 2.0;
+      double final_t = 0.0;
+      int tau = 1000;
+    };
+    ```
 
-   ```shell
-   $ ./main_exe --h-tri 9 --ini-g 0.2 --func sa
-   Hamiltonian energy: 243
-   Simulated annealing
-   Hamiltonian energy: -81
-   ```
+    ```shell
+    $ ./main_exe --h-tri 9 --ini-g 0.2 --func sa
+    Hamiltonian energy: 243
+    Simulated annealing
+    Hamiltonian energy: -81
+    ```
 
 2. `sample_q.in` and `sample_i.in` is a **QUBO/Ising Model** evaluation transform equivalent. `sample_q.in` with `--qubo` will be translated to ising model.
 
-   ```shell
-   $ ./main_exe --file sample_q.in --func sa --qubo
-   Simulated annealing
-   Hamiltonian energy: 0
+    ```shell
+    $ ./main_exe --file sample_q.in --func sa --qubo
+    Simulated annealing
+    Hamiltonian energy: 0
 
-   $ ./main_exe --file sample_i.in --func sa
-   Simulated annealing
-   Hamiltonian energy: 0
-   ```
+    $ ./main_exe --file sample_i.in --func sa
+    Simulated annealing
+    Hamiltonian energy: 0
+    ```
 
 3. To use default triangular model, use `--h-tri` to specify the length and use `--height` to specify the height.
 
-   > Only `--func sqa` i.e. simulated quantum annealing support the height parameter.
+    > Only `--func sqa` i.e. simulated quantum annealing support the height parameter.
 
-   ```shell
-   $ ./main_exe --h-tri 9 --ini-g 0.2 --func sqa --height 32
-   Hamiltonian energy: 243
-   Simulated quantum annealing
-   Hamiltonian energy: -2462
-   ```
+    ```shell
+    $ ./main_exe --h-tri 9 --ini-g 0.2 --func sqa --height 32
+    Hamiltonian energy: 243
+    Simulated quantum annealing
+    Hamiltonian energy: -2462
+    ```
