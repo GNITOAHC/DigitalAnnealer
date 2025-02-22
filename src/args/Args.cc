@@ -78,7 +78,7 @@ void CustomArgs::outputHelp () const {
     // clang-format off
     std::cout << "Options:" << std::endl;
     std::cout << "  --qubo                     Specify that the graph is a QUBO" << std::endl;
-    std::cout << "  --file <source>            The source file path of the input" << std::endl;
+    std::cout << "  --file <source>            The source file path of the input hamiltonian" << std::endl;
     std::cout << "  --h-tri <length>           Use built-in tool to create triangular lattice" << std::endl;
     std::cout << "  --ini-g <gamma>            Specify an initial gamma value for triangular lattice" << std::endl;
     std::cout << "  --final-g <gamma>          Specify an final gamma value for triangular lattice" << std::endl;
