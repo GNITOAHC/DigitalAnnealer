@@ -87,3 +87,8 @@ double Anlr_SA::deltaS (double& src_temp, double& src_energy, double& target_tem
                         double& target_energy) {
     return ((1 / target_temp) - (1 / src_temp)) * (target_energy - src_energy);
 }
+
+void Anlr_SA::setSpins (const int index, const int value) {
+    this->graph.setSpin(index, value);
+    return;
+}

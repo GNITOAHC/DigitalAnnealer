@@ -264,6 +264,16 @@ void Graph::flipSpin (const int& index) {
     spins[index] = (spins[index] == UP) ? DOWN : UP;
 }
 
+void Graph::setSpin (const int index, const int value) {
+    if (index >= spins.size()) { return; }
+    if (value == 1) {
+        spins[index] = UP;
+    } else {
+        spins[index] = DOWN;
+    }
+    return;
+}
+
 // Update the gamma of the graph
 void Graph::updateGamma (const double& gamma) {
     char gamma_update_flag = 0X00; // check if gamma is updated for both up and down

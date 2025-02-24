@@ -42,6 +42,7 @@ class Graph {
     void pushBack(const int&, const int&, const double&); // Push back an edge
     void pushBack(const int&, const double&);             // Push back a constant_map
     void flipSpin(const int&);                            // Flip the spin of the given index
+    void setSpin(const int, const int);                   // Set the spin of the given index
     void updateGamma(const double&);                      // Update the gamma of the graph
     void lockLength();           // Lock the length of the graph to current spins.size()
     void lockLength(const int&); // Lock the length of the graph to current spins.size()

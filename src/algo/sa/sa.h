@@ -48,6 +48,9 @@ class Anlr_SA : public Annealer {
     void printHLayer(std::ofstream&) const;
     void printConfig(std::ofstream&) const;
     bool print_progress = false;
+
+    // Graph maanipulator
+    void setSpins(const int index, const int value);
 };
 
 #endif

@@ -32,6 +32,7 @@ std::vector<ArgFormat> CustomArgs::argsConstruct () const {
         { "--ans-count", ARG_INT, 1 }, // Specify a number of answers to be returned
         { "--print-conf", ARG_BOOL, 0 }, // Print the configuration
         { "--print-progress", ARG_BOOL, 0 }, // Print the configuration
+        { "--spin-conf", ARG_STRING, 1}, // Initialize spins from file
         { "--help", ARG_BOOL, 0, false }, // Display help
     });
 };
@@ -87,8 +88,9 @@ void CustomArgs::outputHelp () const {
     std::cout << "  --tau <tau>                Specify a tau for annealer" << std::endl;
     std::cout << "  --func <func_string>       Specify a function for annealer, either \"sa\" or \"sqa\" " << std::endl;
     std::cout << "  --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8" << std::endl;
-    std::cout << "  --print-progress           Print the annealing progress" << std::endl;
     std::cout << "  --print-conf               Output the configuration" << std::endl;
+    std::cout << "  --print-progress           Print the annealing progress" << std::endl;
+    std::cout << "  --spin-conf <file>         Initialize spins from file" << std::endl;
     std::cout << "  --help                     Display this information" << std::endl;
     // clang-format on
     exit(0);

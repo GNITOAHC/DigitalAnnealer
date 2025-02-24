@@ -14,11 +14,35 @@
 
 #include "./algo/sa/sa.h"
 #include "./algo/sqa/sqa.h"
+#include "graph/Graph.h"
 
 #define debug(n) std::cerr << n << std::endl;
 
 // Make graph with length, height and gamma
 Graph makeGraph(const int&, const int&, const double& gamma);
+
+void readSpins (const std::string& filename, Anlr_SA& graph) {
+    std::vector<Spin> spins;
+    std::fstream file;
+    file.open(filename, std::ios::in);
+    std::string line;
+    std::vector<int> v;
+    int i;
+
+    while (std::getline(file, line)) {
+        if (line[0] == '#') continue; // Skip comment line
+        v.clear();
+        std::stringstream ss(line);
+
+        while (ss >> i)
+            v.push_back(i);
+
+        switch (v.size()) {
+            case 2: graph.setSpins(v[0], v[1]); break;
+            default: break;
+        }
+    }
+}
 
 int run (int argc, char **argv, const int myrank) {
 #ifdef USE_MPI
@@ -81,6 +105,11 @@ int run (int argc, char **argv, const int myrank) {
                     Anlr_SA sa(graph, params);
 
                     if (args.hasArg("--print-progress")) sa.print_progress = true;
+
+                    if (args.hasArg("--spin-conf")) {
+                        std::string filename = std::get<std::string>(args.getArg("--spin-conf"));
+                        readSpins(filename, sa);
+                    }
 
                     hamiltonian_energy = sa.anneal();
 
