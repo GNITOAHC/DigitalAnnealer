@@ -32,7 +32,7 @@ std::vector<ArgFormat> CustomArgs::argsConstruct () const {
         { "--ans-count", ARG_INT, 1 }, // Specify a number of answers to be returned
         { "--print-conf", ARG_BOOL, 0 }, // Print the configuration
         { "--print-progress", ARG_BOOL, 0 }, // Print the configuration
-        { "--spin-conf", ARG_STRING, 1}, // Initialize spins from file
+        { "--spin-conf", ARG_STRING, 1 }, // Initialize spins from file
         { "--help", ARG_BOOL, 0, false }, // Display help
     });
 };
@@ -81,10 +81,10 @@ void CustomArgs::outputHelp () const {
     std::cout << "  --qubo                     Specify that the graph is a QUBO" << std::endl;
     std::cout << "  --file <source>            The source file path of the input hamiltonian" << std::endl;
     std::cout << "  --h-tri <length>           Use built-in tool to create triangular lattice" << std::endl;
-    std::cout << "  --ini-g <gamma>            Specify an initial gamma value for triangular lattice" << std::endl;
-    std::cout << "  --final-g <gamma>          Specify an final gamma value for triangular lattice" << std::endl;
-    std::cout << "  --ini-t <temp>             Specify an initial temperature value for triangular lattice" << std::endl;
-    std::cout << "  --final-t <temp>           Specify an final temperature value for triangular lattice" << std::endl;
+    std::cout << "  --ini-g <gamma>            Specify an initial gamma value" << std::endl;
+    std::cout << "  --final-g <gamma>          Specify an final gamma value" << std::endl;
+    std::cout << "  --ini-t <temp>             Specify an initial temperature value" << std::endl;
+    std::cout << "  --final-t <temp>           Specify an final temperature value" << std::endl;
     std::cout << "  --tau <tau>                Specify a tau for annealer" << std::endl;
     std::cout << "  --func <func_string>       Specify a function for annealer, either \"sa\" or \"sqa\" " << std::endl;
     std::cout << "  --height <height>          Specify a height for triangular lattice ( When annealing with func sqa ) default 8" << std::endl;
